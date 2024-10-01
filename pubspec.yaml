@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   go_router: ^14.2.8
-  supabase_auth_ui: ^0.5.1
+  email_validator: ^2.0.1
   supabase_flutter: ^2.6.0
 
 
