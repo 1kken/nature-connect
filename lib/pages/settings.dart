@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,6 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _usernameController = TextEditingController();
+  Uint8List? imageData;
 
   bool _isLoading = false;
 
@@ -46,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
         password: _oldPasswordController.text.trim(),
       );
 
-      if(!mounted) return;
+      if (!mounted) return;
       if (response.session != null) {
         // Old password is correct; proceed with changing the password
         await _supabase.auth.updateUser(
@@ -70,6 +74,94 @@ class _SettingsPageState extends State<SettingsPage> {
       });
     }
   }
+
+Future<String?> uploadImage() async {
+
+  // Check if imageData is not null
+  if (imageData == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('No image selected. Please choose an image to upload.'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+    return null;
+  }
+
+  // Check if user is authenticated
+  final userId = _supabase.auth.currentUser?.id;
+  if (userId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('User not authenticated. Please log in to upload an avatar.'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+    return null;
+  }
+
+  final imagePath = "$userId/avatar"; 
+
+  setState(() {
+    _isLoading = true;
+  });
+
+  try {
+
+    // Upload the image using uploadBinary and await the response
+    // ignore: unused_local_variable
+    final response = await _supabase.storage.from('avatars').uploadBinary(
+          imagePath,
+          imageData!,
+          fileOptions: const FileOptions(
+            cacheControl: '3600',
+            upsert: true, // Allows overwriting existing files
+          ),
+        );
+
+    // Retrieve the public URL of the uploaded image
+    final imageUrlResponse = _supabase.storage.from('avatars').getPublicUrl(imagePath);
+
+    // Provide success feedback to the user
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Avatar uploaded successfully!'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+      ),
+    );
+
+    return imageUrlResponse;
+  } on StorageException catch (e) {
+    // Handle specific storage exceptions
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Storage Error: ${e.message}'),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+    return null;
+  } catch (e) {
+    // Handle any other exceptions
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('An unexpected error occurred: $e'),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+    return null;
+  } finally {
+    // Ensure the loading state is reset regardless of success or failure
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+}
+
 
   Future<void> _updateUsername() async {
     setState(() {
@@ -102,7 +194,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _logout() async {
     await _supabase.auth.signOut();
-    if(!mounted) return;
+    if (!mounted) return;
     context.go("/");
   }
 
@@ -119,16 +211,44 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Placeholder for avatar (using Supabase storage in the future)
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey[300],
-              child: const Icon(
-                Icons.person,
-                size: 50,
-                color: Colors.white,
-              ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(120),
+              child: imageData != null
+                  ? Image.memory(
+                      imageData!,
+                      width: 150, // Adjust the size as needed
+                      height: 150,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      width: 150,
+                      height: 150,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.person,
+                        size: 100,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
+            const SizedBox(
+              height: 15,
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? image =
+                      await picker.pickImage(source: ImageSource.gallery);
+                  if (image == null) return;
+                  final imageDataBytes = await image.readAsBytes();
+                  setState(() {
+                    imageData = imageDataBytes;
+                  });
+                  uploadImage();
+                },
+                child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Upload Avatar')),
             const SizedBox(height: 16),
 
             // Displaying username

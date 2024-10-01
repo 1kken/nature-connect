@@ -21,7 +21,8 @@ class _AuthPageState extends State<AuthPage> {
 
   bool _isSigningIn = true; // Flag to toggle between sign-in and sign-up
   bool _isLoading = false; // Flag to show loading indicator for form submission
-  bool _isCheckingSession = true; // Flag to show progress bar during session check
+  bool _isCheckingSession =
+      true; // Flag to show progress bar during session check
   bool _isRecoveringPassword = false; // Flag for password recovery mode
 
   @override
@@ -33,7 +34,8 @@ class _AuthPageState extends State<AuthPage> {
   void _checkSession() async {
     final Session? session = Supabase.instance.client.auth.currentSession;
 
-    await Future.delayed(const Duration(seconds: 2)); // Simulate a delay for session check
+    await Future.delayed(
+        const Duration(seconds: 2)); // Simulate a delay for session check
 
     if (!mounted) return;
 
@@ -80,7 +82,8 @@ class _AuthPageState extends State<AuthPage> {
 
     try {
       // ignore: unused_local_variable
-      final AuthResponse response = await Supabase.instance.client.auth.signInWithPassword(
+      final AuthResponse response =
+          await Supabase.instance.client.auth.signInWithPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -105,7 +108,10 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
+
+
   Future<void> _signUp() async {
+
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -115,7 +121,6 @@ class _AuthPageState extends State<AuthPage> {
     try {
       final String email = _emailController.text.trim();
       final String password = _passwordController.text.trim();
-
       final Map<String, dynamic> userMetadata = {
         'username': _usernameController.text.trim(),
         'firstname': _firstnameController.text.trim(),
@@ -131,12 +136,11 @@ class _AuthPageState extends State<AuthPage> {
       );
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Please check your email to confirm your account.'),
-        duration: const Duration(seconds: 10),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      ));
+      context.go('/home');
+      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      //   content: Text('Please check your email to confirm your account.'),
+      //   duration: Duration(seconds: 10),
+      // ));
     } on AuthException catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -342,7 +346,8 @@ class _AuthPageState extends State<AuthPage> {
       ),
       body: _isCheckingSession
           ? const Center(
-              child: CircularProgressIndicator(), // Show loading spinner while checking session
+              child:
+                  CircularProgressIndicator(), // Show loading spinner while checking session
             )
           : SafeArea(
               child: SingleChildScrollView(
