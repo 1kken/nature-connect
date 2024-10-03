@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nature_connect/custom_widgets/make_post_widget.dart';
 
 class NewsfeedPage extends StatefulWidget {
   const NewsfeedPage({super.key});
@@ -10,8 +11,22 @@ class NewsfeedPage extends StatefulWidget {
 class _NewsfeedPageState extends State<NewsfeedPage> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("this is newsfeed"),
+    return Scaffold(floatingActionButton: FloatingActionButton(onPressed: () {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ), // Rounded corners for the dialog
+            child:
+                const MakePostWidget(), // Custom widget for creating a post
+          );
+        },
+      );
+    },
+    child: const Icon(Icons.add),
+    )
     );
   }
 }

@@ -45,7 +45,6 @@ class _SettingsPageState extends State<SettingsPage> {
         .single();
     setState(() {
       _imageUrl = imgUrl['avatar_url'];
-      print(_imageUrl);
     });
   }
 

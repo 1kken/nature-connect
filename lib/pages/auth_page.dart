@@ -108,8 +108,6 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
-
-
   Future<void> _signUp() async {
 
     if (!_formKey.currentState!.validate()) return;
