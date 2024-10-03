@@ -11,7 +11,8 @@ class NewsfeedPage extends StatefulWidget {
 class _NewsfeedPageState extends State<NewsfeedPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(floatingActionButton: FloatingActionButton(onPressed: () {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: () {
       showDialog(
         context: context,
         builder: (BuildContext context) {

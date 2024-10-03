@@ -41,7 +41,6 @@ class _MediaCarouselState extends State<MediaCarousel> {
   void _initializeMedia() {
     for (String path in widget.mediaPaths) {
       final mimeType = lookupMimeType(path);
-
       if (mimeType != null) {
         if (mimeType.startsWith('image/')) {
           // Handle image
@@ -58,11 +57,12 @@ class _MediaCarouselState extends State<MediaCarousel> {
             ),
           );
         } else if (mimeType.startsWith('video/')) {
+          debugPrint(_mediaWidgets.length.toString());
           // Handle video
-          final videoController = VideoPlayerController.networkUrl(Uri.parse('http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'));
+          final videoController = VideoPlayerController.networkUrl(Uri.parse('https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4'));
           final chewieController = ChewieController(
             videoPlayerController: videoController,
-            aspectRatio: 16 / 9,
+            // aspectRatio: 16 / 9,
             autoPlay: false,
             looping: false,
             errorBuilder: (context, errorMessage) {
@@ -99,17 +99,46 @@ class _MediaCarouselState extends State<MediaCarousel> {
     if (_mediaWidgets.isEmpty) {
       return const Center(child: Text('No media available'));
     }
+    return CarouselSlider(items: 
+    ['https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS4_ghViGL1Pk1zvJjIfrW-1_W2WK1b_X11dDBNFVcf88i-Blqb.jpg',
+    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4'].map((i){
+        if(lookupMimeType(i)!.startsWith('image/')){
+          return Container(
+              color: Colors.black,
+              child: Image.network(
+                'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS4_ghViGL1Pk1zvJjIfrW-1_W2WK1b_X11dDBNFVcf88i-Blqb',
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(child: Text('Error loading image'));
+                },
+              ),
+            );
+        }
+          final videoController = VideoPlayerController.networkUrl(Uri.parse('https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4'));
+          final chewieController = ChewieController(
+            videoPlayerController: videoController,
+            aspectRatio: 16 / 9,
+            autoPlay: true,
+            looping: true,
+            errorBuilder: (context, errorMessage) {
+              return const Center(child: Text('Error loading video'));
+            },
+          );
+        return Chewie(controller: chewieController);
+    }).toList(), options: CarouselOptions(height: 400,
+      enlargeCenterPage: true,
 
-    return CarouselSlider(
-      items: _mediaWidgets,
-      options: CarouselOptions(
-        height: 400.0,
-        enlargeCenterPage: true,
-        enableInfiniteScroll: false,
-        autoPlay: false,
-        aspectRatio: 16 / 9,
-      ),
-    );
+    ));
+    // return CarouselSlider(
+    //   items: _mediaWidgets,
+    //   options: CarouselOptions(
+    //     height: 400.0,
+    //     enlargeCenterPage: true,
+    //     enableInfiniteScroll: false,
+    //     autoPlay: false,
+    //     aspectRatio: 16 / 9,
+    //   ),
+    // );
   }
 }
 

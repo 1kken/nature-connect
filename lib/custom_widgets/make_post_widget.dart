@@ -15,6 +15,7 @@ class _MakePostWidgetState extends State<MakePostWidget> {
   final TextEditingController _captionController = TextEditingController();
   List<File> _mediaFiles = []; // Store the selected images or videos
 
+
   // Handle adding media files from the picker
   void addMediaFile(File file) {
     setState(() {
