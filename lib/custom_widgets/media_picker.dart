@@ -38,7 +38,7 @@ class _MediaPickerState extends State<MediaPicker> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 10,
+      spacing: 5,
       alignment: WrapAlignment.center,
       children: [
         ElevatedButton.icon(

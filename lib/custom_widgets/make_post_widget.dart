@@ -2,7 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nature_connect/custom_widgets/media_picker.dart';
-import 'package:nature_connect/custom_widgets/media_carousel.dart';
+import 'package:nature_connect/custom_widgets/media_carousel_path.dart';
 import 'package:nature_connect/services/post_service.dart';
 
 class MakePostWidget extends StatefulWidget {
@@ -14,7 +14,7 @@ class MakePostWidget extends StatefulWidget {
 
 class _MakePostWidgetState extends State<MakePostWidget> {
   final TextEditingController _captionController = TextEditingController();
-  List<File> _mediaFiles = []; // Store the selected images or videos
+  final List<File> _mediaFiles = []; // Store the selected images or videos
   final PostService _postService = PostService();
 
 
@@ -29,6 +29,29 @@ class _MakePostWidgetState extends State<MakePostWidget> {
   void dispose() {
     _captionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _createPost() async {
+    // Prepare list of media paths
+    List<String> mediaPaths = _mediaFiles.map((file) => file.path).toList();
+
+    try {
+      await _postService.createPostWithMedia(
+        _captionController.text,
+        mediaPaths,
+      );
+    } catch (e) {
+      if(!mounted) return; // Prevents error if widget is disposed
+      
+      //Snackbar to show error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to create post: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
   }
 
   
@@ -62,8 +85,8 @@ class _MakePostWidgetState extends State<MakePostWidget> {
             ),
             const SizedBox(height: 10),
             mediaPaths.isEmpty
-                ? const Text('No media selected')
-                : Container(
+                ? const Center( child: Text('No media selected'))
+                : SizedBox(
                     height: 250, // Adjust height as needed
                     child: MediaCarousel(mediaPaths: mediaPaths),
                   ),
@@ -73,10 +96,7 @@ class _MakePostWidgetState extends State<MakePostWidget> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  _postService.createPostWithMedia(
-                    _captionController.text,
-                    mediaPaths,
-                  );
+                  _createPost();
                   Navigator.pop(context); // Close dialog after posting
                 },
                 child: const Text('Post'),

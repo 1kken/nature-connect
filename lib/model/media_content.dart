@@ -5,8 +5,9 @@ class MediaContent {
   final int index;
   final String storageUrl;
   final DateTime createdAt;
+  final String mimeType;
 
-  MediaContent({required this.id,required this.userId,required this.postId ,required this.index,required this.storageUrl,required this.createdAt});
+  MediaContent({required this.id,required this.userId,required this.postId ,required this.index,required this.storageUrl,required this.createdAt,required this.mimeType});
 
   //Convert Record to a MediaContent Object
     factory MediaContent.fromMap(Map<String, dynamic> data) {
@@ -16,7 +17,8 @@ class MediaContent {
       postId: data['post_id'],
       index: data['index'],
       storageUrl: data['storage_url'],
-      createdAt: data['created_at']
+      createdAt: data['created_at'],
+      mimeType: data['mimeType'],
     );
   }
 
@@ -29,6 +31,7 @@ class MediaContent {
       'index': index,
       'storage_url': storageUrl,
       'created_at': createdAt.toIso8601String(),
+      'mimeType': mimeType,
     };
   }
 }

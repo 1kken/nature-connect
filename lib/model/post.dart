@@ -21,7 +21,7 @@ class Post {
   // Convert a Supabase Record to a post object
   factory Post.fromMap(Map<String, dynamic> data) {
     return Post(
-      id: data['id'],
+      id: data['id'].toString(),
       userId: data['user_id'],
       caption: data['caption'],
       likeCount: data['like_count'],
