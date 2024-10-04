@@ -1,11 +1,12 @@
+import 'package:nature_connect/model/media_content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MediaContentService {
-  static final _supabase = Supabase.instance.client;
-  static final _user = Supabase.instance.client.auth.currentUser;
+  final _supabase = Supabase.instance.client;
+  final _user = Supabase.instance.client.auth.currentUser;
 
   //CREATE
-  static Future<void> insertMediaContent(String postId,String userId,String storageUrl, int index) async {
+   Future<void> insertMediaContent(String postId,String userId,String storageUrl, int index, String mimeType) async {
     final userId = _user?.id;
     if (userId == null) {
       return;
@@ -16,14 +17,19 @@ class MediaContentService {
       'post_id': postId,
       'index': index,
       'storage_url': storageUrl,
+      'mime_type': mimeType,
     };
 
     await _supabase.from('media_content').insert(data);
   }
 
   //READ
-  Future<List<Map<String, dynamic>>> getMediaContent(String postId) async {
+  Future<List<MediaContent>> getMediaContent(String postId) async {
+    List<MediaContent> mediaContent = [];
     final response = await _supabase.from('media_content').select().eq('post_id', postId);
-    return response;
+    for (var record in response) {
+      mediaContent.add(MediaContent.fromMap(record));
+    }
+    return mediaContent;
   }
 }

@@ -46,7 +46,7 @@ class PostService {
         final mediaStorageUrl = await MediaService.uploadMedia(mediaPath, postId, mimeType);
 
         //insert media content
-        await MediaContentService.insertMediaContent(postId, userId, mediaStorageUrl, index);
+        await MediaContentService().insertMediaContent(postId, userId, mediaStorageUrl, index,mimeType);
 
       }
       if(mimeType.startsWith('video/')){
@@ -59,7 +59,7 @@ class PostService {
         }
         final mediaStorageUrl = await MediaService.uploadMedia(compressedPath, postId, mimeType);
 
-        await MediaContentService.insertMediaContent(postId, userId, mediaStorageUrl, index);
+        await MediaContentService().insertMediaContent(postId, userId, mediaStorageUrl, index,mimeType);
       }
     }
   }
