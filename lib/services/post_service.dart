@@ -1,15 +1,116 @@
+import 'package:mime/mime.dart';
+import 'package:nature_connect/model/post.dart';
+import 'package:nature_connect/services/media_content_service.dart';
+import 'package:nature_connect/services/media_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:video_compress/video_compress.dart';
 
 class PostService {
-  final _auth = Supabase.instance.client.auth;
   final _user = Supabase.instance.client.auth.currentUser;
+  final _client = Supabase.instance.client;
 
+  //helper function to compress video
+  Future<String?> compressVideo(String videoPath) async {
+    final info = await VideoCompress.compressVideo(
+      videoPath,
+      quality: VideoQuality.MediumQuality,
+      deleteOrigin: false,
+    );
+    return info?.path;
+  }
 
-  //CREATE 
+  //CREATE WITH MEDIA
+  Future<void> createPostWithMedia(
+      String caption, List<String> mediaPaths) async {
+    final userId = _user?.id;
+    if (userId == null) {
+      return;
+    }
+
+    //Create post
+    final postId = await _createPost(caption);
+
+    //loop through the media paths
+    for (var mediaPath in mediaPaths) {
+      //check for mime type
+      final mimeType = lookupMimeType(mediaPath);
+      final index = mediaPaths.indexOf(mediaPath);
+
+      if (mimeType == null) {
+        continue;
+      }
+      //if image
+      if (mimeType.startsWith('image/')) {
+
+        //upload image
+        final mediaStorageUrl = await MediaService.uploadMedia(mediaPath, postId, mimeType);
+
+        //insert media content
+        await MediaContentService.insertMediaContent(postId, userId, mediaStorageUrl, index);
+
+      }
+      if(mimeType.startsWith('video/')){
+        //compress video
+        final compressedPath = await compressVideo(mediaPath);
+
+        //if theres an error
+        if(compressedPath == null){
+         throw Exception('Failed to compress video');
+        }
+        final mediaStorageUrl = await MediaService.uploadMedia(compressedPath, postId, mimeType);
+
+        await MediaContentService.insertMediaContent(postId, userId, mediaStorageUrl, index);
+      }
+    }
+  }
+
+  //CREATE
+  Future<String> _createPost(String caption) async {
+    final userId = _user?.id;
+    if (userId == null) {
+      throw Exception('User not logged in');
+    }
+    try {
+      final post = await _client
+          .from('post')
+          .insert({'user_id': userId, 'caption': caption})
+          .select()
+          .single();
+      return post['id'].toString();
+    } catch (error) {
+      throw Exception('Failed to create post: $error');
+    }
+  }
+
   //READ
+  Future<List<Post>> getPosts() async {
+    final response = await _client.from('post').select();
+
+    final posts = response as List;
+    return posts.map((e) => Post.fromMap(e)).toList();
+  }
+
   //UPDATE
+  Future<void> updatePost(String postId, String caption) async {
+    final userId = _user?.id;
+    if (userId == null) {
+      return;
+    }
+
+    await _client
+        .from('post')
+        .update({'caption': caption})
+        .eq('id', postId)
+        .eq('user_id', userId);
+  }
+
   //DELETE
+  Future<void> deletePost(String postId) async {
+    final userId = _user?.id;
+    if (userId == null) {
+      return;
+    }
 
-  
-
+    await _client.from('post').delete().eq('id', postId).eq('user_id', userId);
+  }
 }

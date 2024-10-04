@@ -17,7 +17,7 @@ class _MediaPickerState extends State<MediaPicker> {
 
   // Function to pick multiple images
   Future<void> _pickImages() async {
-    final List<XFile> pickedFiles = await _picker.pickMultiImage();
+    final List<XFile> pickedFiles = await _picker.pickMultiImage(imageQuality: 25);
 
     if (pickedFiles.isNotEmpty) {
       for (var pickedFile in pickedFiles) {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nature_connect/custom_widgets/media_picker.dart';
 import 'package:nature_connect/custom_widgets/media_carousel.dart';
+import 'package:nature_connect/services/post_service.dart';
 
 class MakePostWidget extends StatefulWidget {
   const MakePostWidget({super.key});
@@ -14,6 +15,7 @@ class MakePostWidget extends StatefulWidget {
 class _MakePostWidgetState extends State<MakePostWidget> {
   final TextEditingController _captionController = TextEditingController();
   List<File> _mediaFiles = []; // Store the selected images or videos
+  final PostService _postService = PostService();
 
 
   // Handle adding media files from the picker
@@ -28,6 +30,8 @@ class _MakePostWidgetState extends State<MakePostWidget> {
     _captionController.dispose();
     super.dispose();
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +73,10 @@ class _MakePostWidgetState extends State<MakePostWidget> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  String caption = _captionController.text;
-                  if (_mediaFiles.isNotEmpty) {
-                    print('Caption: $caption');
-                    print('Media files: ${_mediaFiles.map((file) => file.path)}');
-                    // Proceed with uploading the caption and media files
-                  } else {
-                    print('No media selected');
-                  }
+                  _postService.createPostWithMedia(
+                    _captionController.text,
+                    mediaPaths,
+                  );
                   Navigator.pop(context); // Close dialog after posting
                 },
                 child: const Text('Post'),
