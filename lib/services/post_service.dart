@@ -90,6 +90,14 @@ class PostService {
     return posts.map((e) => Post.fromMap(e)).toList();
   }
 
+  //READ BY USER
+  Future<List<Post>> getPostsByUser(String userId) async {
+    final response = await _client.from('post').select().eq('user_id', userId);
+
+    final posts = response as List;
+    return posts.map((e) => Post.fromMap(e)).toList();
+  }
+
   //UPDATE
   Future<void> updatePost(String postId, String caption) async {
     final userId = _user?.id;

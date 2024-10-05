@@ -14,7 +14,6 @@ class NewsfeedPage extends StatefulWidget {
 
 class _NewsfeedPageState extends State<NewsfeedPage> {
   final _stream = supabase.from('post').stream(primaryKey: ['id']);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
