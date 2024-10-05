@@ -12,9 +12,11 @@ class PostLikeService {
     final existingLike = await _supabase
         .from('post_like')
         .select()
+        .eq('user_id', userId)
         .eq('post_id', postId);
+        
     if (existingLike.isNotEmpty){
-      await unlikePost(postId, userId);
+      await unlikePost(postId, userId,existingLike[0]['id'].toString());
       return;
     }
 
@@ -29,20 +31,9 @@ class PostLikeService {
   }
 
   // Method to unlike a post
-  Future<void> unlikePost(String postId, String userId) async {
-    // Check if the user already liked the post
-    final existingLike = await _supabase
-        .from('post_like')
-        .select()
-        .eq('user_id', userId)
-        .eq('post_id', postId)
-        .limit(1)
-        .single();
-        
-    if (existingLike.isEmpty) return;
-
+  Future<void> unlikePost(String postId, String userId,String existingLikeId) async {
     //unlike the delete from post_like table
-    await _supabase.from('post_like').delete().eq('id', existingLike['id']);
+    await _supabase.from('post_like').delete().eq('id', existingLikeId);
 
     //decrement like_count from post table using rpc call
     await _supabase.rpc('decrement_like_count', params: {'post_id': postId});
