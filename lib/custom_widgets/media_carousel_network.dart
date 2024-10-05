@@ -7,7 +7,13 @@ import 'package:video_player/video_player.dart';
 
 class MediaCarouselNetwork extends StatefulWidget {
   final String postId;
-  const MediaCarouselNetwork({required this.postId, super.key});
+  final bool withMediaContent; // New field to indicate if the post has media
+
+  const MediaCarouselNetwork({
+    required this.postId,
+    required this.withMediaContent,
+    super.key,
+  });
 
   @override
   State<MediaCarouselNetwork> createState() => _MediaCarouselNetworkState();
@@ -38,7 +44,6 @@ class _MediaCarouselNetworkState extends State<MediaCarouselNetwork> {
 
   Widget _buildMediaWidget(MediaContent mediaContent) {
     if (mediaContent.mimeType.startsWith('image/')) {
-      // If it's an image, display the image
       return Container(
         color: Colors.black,
         child: Image.network(
@@ -54,7 +59,6 @@ class _MediaCarouselNetworkState extends State<MediaCarouselNetwork> {
         ),
       );
     } else if (mediaContent.mimeType.startsWith('video/')) {
-      // If it's a video, display the video using Chewie
       final videoController = VideoPlayerController.networkUrl(Uri.parse(mediaContent.storageUrl));
       final chewieController = ChewieController(
         videoPlayerController: videoController,
@@ -78,44 +82,50 @@ class _MediaCarouselNetworkState extends State<MediaCarouselNetwork> {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  return StreamBuilder<List<MediaContent>>(
-    stream: _mediaStream,
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        // Return a fixed box with CircularProgressIndicator while waiting for data
-        return Container(
-          height: 200.0,
-          color: Colors.black12,
-          child: const Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      } else if (snapshot.hasError) {
-        return Center(
-          child: Text('Failed to load media content: ${snapshot.error}'),
-        );
-      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        // If no media is available, return an empty container (blank space)
-        return const SizedBox.shrink();
-      } else {
-        // Use the media content data directly
-        return CarouselSlider(
-          items: snapshot.data!.map((mediaContent) {
-            return _buildMediaWidget(mediaContent);
-          }).toList(),
-          options: CarouselOptions(
-            height: 200.0,
-            enlargeCenterPage: true,
-            enableInfiniteScroll: false,
-            autoPlay: false,
-            aspectRatio: 16 / 9,
-          ),
-        );
-      }
-    },
-  );
-}
+  @override
+  Widget build(BuildContext context) {
+    // If `withMediaContent` is false, just return blank (no media content expected)
+    if (!widget.withMediaContent) {
+      debugPrint('just uploaded i am cooked?!');
+      return const SizedBox.shrink(); // No media to show, return blank
+    }
 
+    // If `withMediaContent` is true, show loading indicator until media is fetched
+    return StreamBuilder<List<MediaContent>>(
+      stream: _mediaStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show loading spinner while media is being fetched
+          return Container(
+            height: 200.0,
+            color: Colors.black12,
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Failed to load media content: ${snapshot.error}'),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          // If no media is available (even though `withMediaContent` is true), return blank
+          return const SizedBox.shrink();
+        } else {
+          // Use the media content data directly in a carousel
+          return CarouselSlider(
+            items: snapshot.data!.map((mediaContent) {
+              return _buildMediaWidget(mediaContent);
+            }).toList(),
+            options: CarouselOptions(
+              height: 200.0,
+              enlargeCenterPage: true,
+              enableInfiniteScroll: false,
+              autoPlay: false,
+              aspectRatio: 16 / 9,
+            ),
+          );
+        }
+      },
+    );
+  }
 }

@@ -13,7 +13,7 @@ class PostService {
   Future<String?> compressVideo(String videoPath) async {
     final info = await VideoCompress.compressVideo(
       videoPath,
-      quality: VideoQuality.MediumQuality,
+      quality: VideoQuality.LowQuality,
       deleteOrigin: false,
     );
     return info?.path;
@@ -26,9 +26,9 @@ class PostService {
     if (userId == null) {
       return;
     }
-
+    
     //Create post
-    final postId = await _createPost(caption);
+    final postId = await _createPost(caption,mediaPaths.isNotEmpty);
 
     //loop through the media paths
     for (var mediaPath in mediaPaths) {
@@ -65,7 +65,7 @@ class PostService {
   }
 
   //CREATE
-  Future<String> _createPost(String caption) async {
+  Future<String> _createPost(String caption,bool withMediaContent) async {
     final userId = _user?.id;
     if (userId == null) {
       throw Exception('User not logged in');
@@ -73,7 +73,7 @@ class PostService {
     try {
       final post = await _client
           .from('post')
-          .insert({'user_id': userId, 'caption': caption})
+          .insert({'user_id': userId, 'caption': caption,'with_media_content':withMediaContent})
           .select()
           .single();
       return post['id'].toString();

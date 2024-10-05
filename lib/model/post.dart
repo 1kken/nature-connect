@@ -10,13 +10,15 @@ class Post {
   final String caption;
   final int likeCount;
   final DateTime createdAt;
+  final bool withMediaContent;
 
   Post(
       {required this.id,
       required this.userId,
       required this.caption,
       required this.likeCount,
-      required this.createdAt});
+      required this.createdAt,
+      required this.withMediaContent});
 
   // Convert a Supabase Record to a post object
   factory Post.fromMap(Map<String, dynamic> data) {
@@ -26,6 +28,7 @@ class Post {
       caption: data['caption'],
       likeCount: data['like_count'],
       createdAt: DateTime.parse(data['created_at']),
+      withMediaContent: data['with_media_content'],
     );
   }
 
@@ -37,6 +40,7 @@ class Post {
       'caption': caption,
       'like_count': likeCount,
       'created_at': createdAt.toIso8601String(),
+      'with_media_content': withMediaContent,
     };
   }
   

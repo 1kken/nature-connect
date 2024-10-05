@@ -49,6 +49,7 @@ class _PostWidgetState extends State<PostWidget> {
   
   @override
   Widget build(BuildContext context) {
+    debugPrint('withMediaContent: ${widget.post.withMediaContent}');
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       child: Padding(
@@ -71,7 +72,7 @@ class _PostWidgetState extends State<PostWidget> {
             const SizedBox(height: 10),
             Text(widget.post.caption), // Post content (e.g., caption)
             const SizedBox(height: 10),
-            MediaCarouselNetwork(postId: widget.post.id),
+            MediaCarouselNetwork(postId: widget.post.id, withMediaContent: widget.post.withMediaContent),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
