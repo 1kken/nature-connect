@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nature_connect/custom_widgets/media_carousel_network.dart';
 import 'package:nature_connect/model/post.dart';
 import 'package:nature_connect/model/profile.dart';
 import 'package:nature_connect/services/profile_services.dart';
@@ -70,14 +71,13 @@ class _PostWidgetState extends State<PostWidget> {
             const SizedBox(height: 10),
             Text(widget.post.caption), // Post content (e.g., caption)
             const SizedBox(height: 10),
-            // You can add MediaCarousel or other media display widgets here
-            // MediaCarouselNetwork(mediaUrls: widget.post.mediaUrls),
+            MediaCarouselNetwork(postId: widget.post.id),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton.icon(
                   icon: const Icon(Icons.favorite),
-                  label: const Text('Heartueee :*'),
+                  label:  Text(widget.post.likeCount.toString()),
                   onPressed: () {
                     // Implement like functionality
                   },

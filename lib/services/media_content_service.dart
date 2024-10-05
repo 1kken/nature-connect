@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:nature_connect/model/media_content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -26,10 +27,24 @@ class MediaContentService {
   //READ
   Future<List<MediaContent>> getMediaContent(String postId) async {
     List<MediaContent> mediaContent = [];
-    final response = await _supabase.from('media_content').select().eq('post_id', postId);
-    for (var record in response) {
-      mediaContent.add(MediaContent.fromMap(record));
+    try{
+      final response = await _supabase.from('media_content').select().eq('post_id', postId);
+      for (var record in response) {
+        mediaContent.add(MediaContent.fromMap(record));
+      }
+      debugPrint('Media content: $mediaContent');
+      return mediaContent;
+    }catch(e){
+      rethrow;
     }
-    return mediaContent;
+  }
+
+  //STREAM
+    Stream<List<MediaContent>> getMediaContentStream(String postId) {
+    return _supabase
+        .from('media_content')
+        .stream(primaryKey: ['id'])
+        .eq('post_id', postId)
+        .map((data) => data.map((e) => MediaContent.fromMap(e)).toList());
   }
 }
