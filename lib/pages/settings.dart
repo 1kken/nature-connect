@@ -28,6 +28,14 @@ class _SettingsPageState extends State<SettingsPage> {
     getimgUrl();
   }
 
+    
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+  
   @override
   void dispose() {
     _oldPasswordController.dispose();
