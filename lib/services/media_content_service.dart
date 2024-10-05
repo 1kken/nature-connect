@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:nature_connect/model/media_content.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,7 +31,6 @@ class MediaContentService {
       for (var record in response) {
         mediaContent.add(MediaContent.fromMap(record));
       }
-      debugPrint('Media content: $mediaContent');
       return mediaContent;
     }catch(e){
       rethrow;

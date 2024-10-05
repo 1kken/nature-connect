@@ -86,7 +86,6 @@ class _MediaCarouselNetworkState extends State<MediaCarouselNetwork> {
   Widget build(BuildContext context) {
     // If `withMediaContent` is false, just return blank (no media content expected)
     if (!widget.withMediaContent) {
-      debugPrint('just uploaded i am cooked?!');
       return const SizedBox.shrink(); // No media to show, return blank
     }
 

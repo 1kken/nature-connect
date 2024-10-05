@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nature_connect/custom_widgets/media_carousel_network.dart';
 import 'package:nature_connect/model/post.dart';
 import 'package:nature_connect/model/profile.dart';
+import 'package:nature_connect/services/post_like_service.dart';
 import 'package:nature_connect/services/profile_services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PostWidget extends StatefulWidget {
   final Post post;
@@ -13,8 +15,17 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
+  bool _isLiked = false;
+  final _currentUserId = Supabase.instance.client.auth.currentUser?.id;
   Profile? profile;
+  final postLikeService = PostLikeService();
 
+  Future<void> isLikedSetter() async {
+    final isLiked = await PostLikeService().isPostLiked(widget.post.id, _currentUserId);
+    setState(() {
+      _isLiked = isLiked;
+    });
+  }
   // Fetch the user who created the post using post.user_id
   Future<void> fetchProfile(String userId) async {
     try {
@@ -44,12 +55,19 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   void initState() {
     super.initState();
+    isLikedSetter();
     fetchProfile(widget.post.userId);
   }
   
   @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
+  
+  @override
   Widget build(BuildContext context) {
-    debugPrint('withMediaContent: ${widget.post.withMediaContent}');
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
       child: Padding(
@@ -76,11 +94,24 @@ class _PostWidgetState extends State<PostWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                TextButton.icon(
+                _isLiked ? TextButton.icon(
                   icon: const Icon(Icons.favorite),
                   label:  Text(widget.post.likeCount.toString()),
                   onPressed: () {
-                    // Implement like functionality
+                    postLikeService.likePost(widget.post.id, _currentUserId);
+                    setState(() {
+                      _isLiked = false;
+                    });
+                  },
+                ) :
+                TextButton.icon(
+                  icon: const Icon(Icons.favorite_border),
+                  label:  Text(widget.post.likeCount.toString()),
+                  onPressed: () {
+                    postLikeService.likePost(widget.post.id, _currentUserId);
+                    setState(() {
+                      _isLiked = true;
+                    });
                   },
                 ),
                 TextButton.icon(
