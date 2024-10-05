@@ -19,7 +19,7 @@ class _PostWidgetState extends State<PostWidget> {
   Future<void> fetchProfile(String userId) async {
     try {
       //use service for fetching profile
-      final fetchedProfile = await ProfileServices().fetchProfile();
+      final fetchedProfile = await ProfileServices().fetchProfileById(widget.post.userId);
       setState(() {
         profile = fetchedProfile;
       });
