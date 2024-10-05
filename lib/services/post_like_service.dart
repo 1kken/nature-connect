@@ -34,8 +34,11 @@ class PostLikeService {
     final existingLike = await _supabase
         .from('post_like')
         .select()
+        .eq('user_id', userId)
         .eq('post_id', postId)
+        .limit(1)
         .single();
+        
     if (existingLike.isEmpty) return;
 
     //unlike the delete from post_like table
@@ -53,6 +56,7 @@ class PostLikeService {
     final existingLike = await _supabase
         .from('post_like')
         .select()
+        .eq('user_id', userId)
         .eq('post_id', postId);
     return existingLike.isNotEmpty;
   }
