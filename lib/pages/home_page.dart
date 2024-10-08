@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nature_connect/custom_search_delegate.dart';
 import 'package:nature_connect/pages/location.dart';
 import 'package:nature_connect/pages/marketplace.dart';
 import 'package:nature_connect/pages/newsfeed.dart';
@@ -40,6 +41,13 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('NatureConnect'), // AppBar title
         actions: [
+          //search bar
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: CustomSearchDelegate());
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
