@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nature_connect/custom_widgets/post_widget.dart';
+import 'package:nature_connect/custom_widgets/search_history_widget.dart';
 import 'package:nature_connect/model/post.dart';
 import 'package:nature_connect/model/profile.dart';
+import 'package:nature_connect/providers/search_history_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
@@ -32,6 +34,9 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    if(query.isNotEmpty){
+      SearchHistoryProvider().addSearchHistory(query);
+    }
     if (query.isNotEmpty) {
       return DefaultTabController(
         length: 2,
@@ -112,7 +117,7 @@ class CustomSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return const Center(child: Text('Start typing to search.'));
+    return const SearchHistoryWidget();
   }
 
   // Method to search for profiles from Supabase
