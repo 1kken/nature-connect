@@ -5,8 +5,10 @@ import 'dart:io';
 
 class MediaPicker extends StatefulWidget {
   final Function(File) addMediaFile;
+  final bool withVideo;
 
-  const MediaPicker({required this.addMediaFile, super.key});
+  const MediaPicker(
+      {required this.addMediaFile, this.withVideo = true, super.key});
 
   @override
   State<MediaPicker> createState() => _MediaPickerState();
@@ -17,7 +19,8 @@ class _MediaPickerState extends State<MediaPicker> {
 
   // Function to pick multiple images
   Future<void> _pickImages() async {
-    final List<XFile> pickedFiles = await _picker.pickMultiImage(imageQuality: 25);
+    final List<XFile> pickedFiles =
+        await _picker.pickMultiImage(imageQuality: 25);
 
     if (pickedFiles.isNotEmpty) {
       for (var pickedFile in pickedFiles) {
@@ -28,7 +31,8 @@ class _MediaPickerState extends State<MediaPicker> {
 
   // Function to pick a video
   Future<void> _pickVideo() async {
-    final XFile? pickedFile = await _picker.pickVideo(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await _picker.pickVideo(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       widget.addMediaFile(File(pickedFile.path));
@@ -46,10 +50,14 @@ class _MediaPickerState extends State<MediaPicker> {
           icon: const Icon(Icons.photo),
           label: const Text('Pick Images'),
         ),
-        ElevatedButton.icon(
-          onPressed: _pickVideo,
-          icon: const Icon(Icons.videocam),
-          label: const Text('Pick Video'),
+        Center(
+          child: widget.withVideo
+              ? ElevatedButton.icon(
+                  onPressed: _pickVideo,
+                  icon: const Icon(Icons.videocam),
+                  label: const Text('Pick Video'),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );
