@@ -134,11 +134,12 @@ class CustomSearchDelegate extends SearchDelegate {
 
   // Method to search for posts from Supabase
   Future<List<Post>> searchPosts(String query) async {
+
     final response = await Supabase.instance.client
         .from('post')
-        .select('*, profiles(username, avatar_url)')
-        .or('caption.ilike.$query');
-
+        .select()
+        .ilike('caption', '%$query%'); 
+        
     return (response as List).map((post) => Post.fromMap(post)).toList();
   }
 }

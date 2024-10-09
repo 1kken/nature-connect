@@ -8,7 +8,7 @@ class MediaService {
 
 //UPLOADE IMAGE TO post_media storage
   static Future<String> uploadMedia(
-      String path, String postId, String mimeType) async {
+      String path, String postId, String mimeType,String storagePath) async {
     //generate unique id for the media
     final uuid = const Uuid().v4();
 
@@ -20,13 +20,13 @@ class MediaService {
     final data = await file.readAsBytes();
 
     //upload the file to the storage
-    await _supabase.storage.from('post_media').uploadBinary(
+    await _supabase.storage.from(storagePath).uploadBinary(
         storagePathName, data,
         fileOptions: FileOptions(cacheControl: '3600', contentType: mimeType));
 
     //get the public url after uploading
     final url = _supabase.storage
-        .from('post_media')
+        .from(storagePath)
         .getPublicUrl(storagePathName);
 
     return url;

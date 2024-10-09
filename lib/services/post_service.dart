@@ -29,6 +29,7 @@ class PostService {
     
     //Create post
     final postId = await _createPost(caption,mediaPaths.isNotEmpty);
+    const  storagePath = 'post_media';
 
     //loop through the media paths
     for (var mediaPath in mediaPaths) {
@@ -43,7 +44,7 @@ class PostService {
       if (mimeType.startsWith('image/')) {
 
         //upload image
-        final mediaStorageUrl = await MediaService.uploadMedia(mediaPath, postId, mimeType);
+        final mediaStorageUrl = await MediaService.uploadMedia(mediaPath, postId, mimeType,storagePath);
 
         //insert media content
         await MediaContentService().insertMediaContent(postId, userId, mediaStorageUrl, index,mimeType);
@@ -57,7 +58,7 @@ class PostService {
         if(compressedPath == null){
          throw Exception('Failed to compress video');
         }
-        final mediaStorageUrl = await MediaService.uploadMedia(compressedPath, postId, mimeType);
+        final mediaStorageUrl = await MediaService.uploadMedia(compressedPath, postId, mimeType,storagePath);
 
         await MediaContentService().insertMediaContent(postId, userId, mediaStorageUrl, index,mimeType);
       }
