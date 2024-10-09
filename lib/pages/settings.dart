@@ -18,6 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _usernameController = TextEditingController();
+  final _bioController = TextEditingController();
   String? _imageUrl;
   Uint8List? imageData;
 
@@ -28,14 +29,13 @@ class _SettingsPageState extends State<SettingsPage> {
     getimgUrl();
   }
 
-    
   @override
   void setState(fn) {
-    if(mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }
-  
+
   @override
   void dispose() {
     _oldPasswordController.dispose();
@@ -46,14 +46,42 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> getimgUrl() async {
     final userId = _supabase.auth.currentUser?.id;
-    final imgUrl = await _supabase
-        .from('profiles')
-        .select('avatar_url')
-        .eq('id', userId!)
-        .single();
+    final profile =
+        await _supabase.from('profiles').select().eq('id', userId!).single();
     setState(() {
-      _imageUrl = imgUrl['avatar_url'];
+      _bioController.text = profile['bio'] ?? '';
+      _imageUrl = profile['avatar_url'];
     });
+  }
+
+  // Save the updated bio to Supabase
+  Future<void> _updateBio() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User is not logged in')),
+      );
+      return;
+    }
+
+    try {
+      await _supabase
+          .from('profiles')
+          .update({'bio': _bioController.text.trim()}).eq('id', userId);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _changePassword() async {
@@ -298,6 +326,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ? const CircularProgressIndicator()
                     : const Text('Upload Avatar')),
             const SizedBox(height: 16),
+            //
 
             // Displaying username
             Text(
@@ -318,6 +347,24 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
 
             const SizedBox(height: 16),
+            // Change Bio Section
+            TextField(
+              controller: _bioController, // Bind the bio controller
+              decoration: const InputDecoration(
+                labelText: 'Update Bio',
+                prefixIcon: Icon(Icons.edit),
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3, // Allows multiple lines for bio
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _updateBio,
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Save Bio'),
+            ),
+            const SizedBox(height: 32),
 
             // Change Username Section
             TextField(
@@ -336,7 +383,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   : const Text('Update Username'),
             ),
             const SizedBox(height: 32),
-
             // Change Password Section
             TextField(
               controller: _oldPasswordController,
