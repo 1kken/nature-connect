@@ -1,6 +1,6 @@
 import 'package:mime/mime.dart';
 import 'package:nature_connect/model/marketplace_item.dart';
-import 'package:nature_connect/services/media_content_service.dart';
+import 'package:nature_connect/services/marketplace_media_service.dart';
 import 'package:nature_connect/services/media_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -26,8 +26,8 @@ class MarketplaceItemService {
 
     //try catch and return the id of the marketplace_itm
     try {
-      final response = await _supabase.from('marketplace_item').insert(data);
-      return response.data.first['id'];
+      final response = await _supabase.from('marketplace_item').insert(data).select().single();
+      return response['id'].toString();
     } catch (e) {
       rethrow;
     }
@@ -55,10 +55,10 @@ class MarketplaceItemService {
       }
 
       //upload media
-      final mediaStorageUrl = await MediaService.uploadMedia(mediaUrl, itemId, mimeType, 'marketplace_item_media');
+      final mediaStorageUrl = await MediaService.uploadMedia(mediaUrl, itemId, mimeType, 'marketplace_media');
        
       //insert marketplace_media
-      await MediaContentService().insertMediaContent(itemId, userId, mediaStorageUrl, index, mimeType);
+      await MarketplaceMediaService().insertMarketplaceMedia(itemId,index,mediaStorageUrl,mimeType);
     }
   }
 

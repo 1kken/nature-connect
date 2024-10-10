@@ -40,6 +40,12 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
   }
 
   Future<void> _createItem() async {
+    if(_mediaFiles.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select media for the item')),
+      );
+      return;
+    }
     final String title = _titleController.text;
     final String caption = _captionController.text;
     final double price = double.tryParse(_priceController.text) ?? 0.0; // Default to 0.0 if invalid
@@ -50,17 +56,22 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
     }
 
     try {
-      await _marketplaceItemService.insertMarketplaceItem(
+      //create item with media
+      await _marketplaceItemService.insertMarketplaceItemWithMedia(
         _userId,
         title,
         caption,
         price,
         stock,
+        _mediaFiles.map((file) => file.path).toList(),
       );
 
       if(!mounted){
         return;
       }
+
+      //pop the modal
+      Navigator.pop(context);
 
       // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(

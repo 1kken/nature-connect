@@ -22,8 +22,8 @@ class MarketplaceMediaService {
 
     //try catch and return the id of the marketplace_media
     try {
-      final response = await _supabase.from('marketplace_media').insert(data);
-      return response.data.first['id'];
+      final response = await _supabase.from('marketplace_media').insert(data).select().single();
+      return response['id'].toString();
     } catch (e) {
       rethrow;
     }
