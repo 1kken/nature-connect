@@ -43,6 +43,16 @@ class MarketplaceMediaService {
     }
   }
 
+  //READ GET THHE FIRST MEDIA
+  Future<MarketplaceMedia?> getFirstMarketplaceMedia(String itemId) async {
+    try {
+      final response = await _supabase.from('marketplace_media').select().eq('item_id', itemId).limit(1).single();
+      return MarketplaceMedia.fromMap(response);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   //STREAM
   Stream<List<MarketplaceMedia>> getMarketplaceMediaStream(String itemId) {
     return _supabase
@@ -51,6 +61,4 @@ class MarketplaceMediaService {
         .eq('item_id', itemId)
         .map((data) => data.map((e) => MarketplaceMedia.fromMap(e)).toList());
   }
-
-  
 }

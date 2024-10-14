@@ -39,7 +39,7 @@ class MarketplaceMedia {
       marketplaceItemId: map['marketplaceItemId'] ?? 0,
       index: map['index'] ?? 0,
       userId: map['userId'] ?? '',
-      storageUrl: map['storageUrl'] ?? '',
+      storageUrl: map['storage_url'] ?? '',
       mimeType: map['mimeType'] ?? '',
       createdAt: map['createdAt'] != null
           ? DateTime.parse(map['createdAt'])

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nature_connect/custom_widgets/make_item_widget.dart';
+import 'package:nature_connect/custom_widgets/marketplace_widget.dart';
+import 'package:nature_connect/services/marketplace_item_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
+
 class MarketplacePage extends StatefulWidget {
   const MarketplacePage({super.key});
 
@@ -11,45 +14,63 @@ class MarketplacePage extends StatefulWidget {
 }
 
 class _MarketplacePageState extends State<MarketplacePage> {
-  final _stream = supabase.from('marketplace_item').stream(primaryKey: ['id']);
+  final _stream = MarketplaceItemService().getMarketplaceItemsStream();
   
   @override
   Widget build(BuildContext context) {
- return Scaffold(
-  body: StreamBuilder(stream: _stream, builder: (context,snapshot){
-        if(snapshot.hasError){
-          return const Center(child: Text('An error occurred while loading posts'));
-        }
-        if(snapshot.connectionState == ConnectionState.waiting){
-          return const Center(child: CircularProgressIndicator());
-        }
-        final items = snapshot.data as List;
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context,index){
-            final item = items[index];
-            return Text(item['title'].toString());
-          },
-        );
-      }),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-      
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ), // Rounded corners for the dialog
-            child:
-                const MakeItemWidget(), // Custom widget for creating a post
+    return Scaffold(
+      body: StreamBuilder(
+        stream: _stream,
+        builder: (context, snapshot) {
+          // Handle error case
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('An error occurred while loading posts: ${snapshot.error.toString()}'),
+            );
+          }
+
+          // Show loading spinner while waiting for data
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Safely handle null data
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('No items available.'));
+          }
+
+          final items = snapshot.data as List;
+
+          // Check if the list is empty
+          if (items.isEmpty) {
+            return const Center(child: Text('No items available.'));
+          }
+
+          return GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 1,
+            crossAxisSpacing: 1,
+            childAspectRatio: 0.80, // Adjust the item size in the grid
+            children: items.map((item) => MarketplaceWidget(item: item)).toList(),
           );
         },
-      );
-    },
-    child: const Icon(Icons.add),
-    )
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ), // Rounded corners for the dialog
+                child: const MakeItemWidget(), // Custom widget for creating a post
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
-  }
-
+}

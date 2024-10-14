@@ -31,7 +31,7 @@ class MarketplaceItem {
 
   factory MarketplaceItem.fromMap(Map<String, dynamic> map) {
     return MarketplaceItem(
-      id: map['id'] ?? '',
+      id: map['id'].toString(),
       userId: map['user_id'] ?? '',
       title: map['title'] ?? '',
       caption: map['caption'] ?? '',

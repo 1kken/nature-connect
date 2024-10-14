@@ -89,4 +89,12 @@ class MarketplaceItemService {
       rethrow;
     }
   }
+
+  //STREAM
+  Stream<List<MarketplaceItem>> getMarketplaceItemsStream() {
+    return _supabase
+        .from('marketplace_item')
+        .stream(primaryKey: ['id'])
+        .map((data) => data.map((e) => MarketplaceItem.fromMap(e)).toList());
+  }
 }

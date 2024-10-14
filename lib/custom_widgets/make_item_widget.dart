@@ -18,10 +18,12 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
   final TextEditingController _captionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _stockController = TextEditingController();
-  final List<File> _mediaFiles = []; // Store the selected images 
+  final List<File> _mediaFiles = []; // Store the selected images
 
-  final MarketplaceItemService _marketplaceItemService = MarketplaceItemService(); // Marketplace Item service
-  final _userId = Supabase.instance.client.auth.currentUser?.id; // Get the current user ID
+  final MarketplaceItemService _marketplaceItemService =
+      MarketplaceItemService(); // Marketplace Item service
+  final _userId =
+      Supabase.instance.client.auth.currentUser?.id; // Get the current user ID
 
   @override
   void dispose() {
@@ -32,7 +34,7 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
     super.dispose();
   }
 
-    // Handle adding media files from the picker
+  // Handle adding media files from the picker
   void addMediaFile(File file) {
     setState(() {
       _mediaFiles.add(file);
@@ -40,7 +42,7 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
   }
 
   Future<void> _createItem() async {
-    if(_mediaFiles.isEmpty){
+    if (_mediaFiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select media for the item')),
       );
@@ -48,10 +50,12 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
     }
     final String title = _titleController.text;
     final String caption = _captionController.text;
-    final double price = double.tryParse(_priceController.text) ?? 0.0; // Default to 0.0 if invalid
-    final int stock = int.tryParse(_stockController.text) ?? 0; // Default to 0 if invalid
+    final double price = double.tryParse(_priceController.text) ??
+        0.0; // Default to 0.0 if invalid
+    final int stock =
+        int.tryParse(_stockController.text) ?? 0; // Default to 0 if invalid
 
-    if(_userId == null){
+    if (_userId == null) {
       return;
     }
 
@@ -66,12 +70,9 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
         _mediaFiles.map((file) => file.path).toList(),
       );
 
-      if(!mounted){
+      if (!mounted) {
         return;
       }
-
-      //pop the modal
-      Navigator.pop(context);
 
       // Show a success message
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +93,7 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
     List<String> mediaPaths = _mediaFiles.map((file) => file.path).toList();
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(1.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,8 +103,8 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-                        mediaPaths.isEmpty
-                ? const Center( child: Text('No media selected'))
+            mediaPaths.isEmpty
+                ? const Center(child: Text('No media selected'))
                 : SizedBox(
                     height: 250, // Adjust height as needed
                     child: MediaCarousel(mediaPaths: mediaPaths),
@@ -131,7 +132,8 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
                 labelText: 'Price',
                 border: OutlineInputBorder(),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
             ),
             const SizedBox(height: 10),
             TextField(
@@ -142,13 +144,15 @@ class _MakeItemWidgetState extends State<MakeItemWidget> {
               ),
               keyboardType: TextInputType.number,
             ),
-                        const SizedBox(height: 10),
-
+            const SizedBox(height: 10),
             MediaPicker(addMediaFile: addMediaFile, withVideo: false),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: _createItem,
+                onPressed: () {
+                  _createItem();
+                  Navigator.pop(context); // Close dialog after posting
+                },
                 child: const Text('Post to Marketplace'),
               ),
             ),
