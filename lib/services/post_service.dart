@@ -91,6 +91,16 @@ class PostService {
     return posts.map((e) => Post.fromMap(e)).toList();
   }
 
+  //READ BY ID
+  Future<Post> getPostById(String postId) async {
+    try {
+      final response = await _client.from('post').select().eq('id', postId).single();
+      return Post.fromMap(response);
+    } catch (error) {
+      throw Exception('Failed to get post: $error');
+    }
+  }
+
   //READ BY USER
   Future<List<Post>> getPostsByUser(String userId) async {
     final response = await _client.from('post').select().eq('user_id', userId);

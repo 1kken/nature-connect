@@ -5,6 +5,7 @@ import 'package:nature_connect/model/profile.dart';
 import 'package:nature_connect/services/post_like_service.dart';
 import 'package:nature_connect/services/profile_services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class PostWidget extends StatefulWidget {
   final Post post;
@@ -118,7 +119,7 @@ class _PostWidgetState extends State<PostWidget> {
                   icon: const Icon(Icons.comment),
                   label: const Text('Comment'),
                   onPressed: () {
-                    // Implement comment functionality
+                    context.go('/comments/${widget.post.id}');
                   },
                 ),
               ],
