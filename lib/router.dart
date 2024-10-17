@@ -1,10 +1,13 @@
 import 'package:go_router/go_router.dart';
 import 'package:nature_connect/custom_widgets/comment_section.dart';
+import 'package:nature_connect/custom_widgets/make_item_widget.dart';
+import 'package:nature_connect/custom_widgets/make_post_widget.dart';
 import 'package:nature_connect/pages/auth_page.dart';
 import 'package:nature_connect/pages/home_page.dart';
 import 'package:nature_connect/pages/marketplace.dart';
 import 'package:nature_connect/pages/newsfeed.dart';
 import 'package:nature_connect/pages/profile.dart';
+import 'package:nature_connect/pages/profile_v.dart';
 import 'package:nature_connect/pages/weather.dart';
 
 
@@ -30,7 +33,16 @@ GoRouter goRouter() {
         final postId = state.pathParameters['postId'];
         return CommentSection(postId: postId!,);
       },),
-      // Add other routes as needed
+      GoRoute(path: '/profile/:userId',builder: (context, state){
+        final userId = state.pathParameters['userId'];
+        return ProfileV(userId: userId!);
+      },),
+      GoRoute(path: '/makepost',builder: (context, state){
+        return const MakePostWidget();
+      },),
+      GoRoute(path: '/makeitem',builder: (context, state){
+        return const MakeItemWidget();
+      },),
     ],
   );
 }

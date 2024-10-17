@@ -5,6 +5,7 @@ import 'package:nature_connect/model/post.dart';
 import 'package:nature_connect/model/profile.dart';
 import 'package:nature_connect/providers/search_history_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
   @override
@@ -76,6 +77,9 @@ class CustomSearchDelegate extends SearchDelegate {
                                   : null,
                             ),
                             title: Text(profile.username),
+                            onTap: (){
+                              context.go('/profile/${profile.id}');
+                            },
                           );
                         },
                       );

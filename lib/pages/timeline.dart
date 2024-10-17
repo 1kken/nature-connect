@@ -7,14 +7,15 @@ import 'package:nature_connect/pages/newsfeed.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TimelinePage extends StatefulWidget {
-  const TimelinePage({super.key});
+  final String? userId;
+  const TimelinePage({this.userId,super.key});
 
   @override
   State<TimelinePage> createState() => _TimelinePageState();
 }
 
 class _TimelinePageState extends State<TimelinePage> {
-  final _userId = Supabase.instance.client.auth.currentUser?.id;
+  String? _userId;
 
   late SupabaseStreamBuilder _stream;
 
@@ -29,12 +30,13 @@ class _TimelinePageState extends State<TimelinePage> {
     setState(() {
       _stream = supabase
           .from('post')
-          .stream(primaryKey: ['id']).eq('user_id', _userId);
+          .stream(primaryKey: ['id']).eq('user_id', _userId!);
     });
   }
 
   @override
   void initState() {
+    _userId = widget.userId ?? supabase.auth.currentUser?.id;
     streamBuilder();
     super.initState();
   }

@@ -48,7 +48,7 @@ class _MediaCarouselNetworkState extends State<MediaCarouselNetwork> {
         color: Colors.black,
         child: Image.network(
           mediaContent.storageUrl,
-          fit: BoxFit.contain,
+          fit: BoxFit.fitWidth,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return const Center(child: CircularProgressIndicator());

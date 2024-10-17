@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nature_connect/custom_widgets/make_item_widget.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nature_connect/custom_widgets/marketplace_widget.dart';
 import 'package:nature_connect/services/marketplace_item_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -57,17 +57,7 @@ class _MarketplacePageState extends State<MarketplacePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Dialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ), // Rounded corners for the dialog
-                child: const MakeItemWidget(), // Custom widget for creating a post
-              );
-            },
-          );
+          context.go('/makeitem');
         },
         child: const Icon(Icons.add),
       ),

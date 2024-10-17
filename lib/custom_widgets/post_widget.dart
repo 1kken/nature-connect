@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:nature_connect/custom_widgets/media_carousel_network.dart';
 import 'package:nature_connect/model/post.dart';
 import 'package:nature_connect/model/profile.dart';
@@ -17,6 +18,7 @@ class PostWidget extends StatefulWidget {
 
 class _PostWidgetState extends State<PostWidget> {
   bool _isLiked = false;
+  bool _isCaptionExpanded = false; // State for "See More"
   final _currentUserId = Supabase.instance.client.auth.currentUser?.id;
   Profile? profile;
   final postLikeService = PostLikeService();
@@ -27,16 +29,17 @@ class _PostWidgetState extends State<PostWidget> {
       _isLiked = isLiked;
     });
   }
+
   // Fetch the user who created the post using post.user_id
   Future<void> fetchProfile(String userId) async {
     try {
-      //use service for fetching profile
+      // Use service for fetching profile
       final fetchedProfile = await ProfileServices().fetchProfileById(widget.post.userId);
       setState(() {
         profile = fetchedProfile;
       });
     } catch (e) {
-      //snack bar
+      // Snack bar for error
       if (!mounted) return; // Prevents error if widget is disposed
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -62,15 +65,24 @@ class _PostWidgetState extends State<PostWidget> {
   
   @override
   void setState(fn) {
-    if(mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }
   
   @override
   Widget build(BuildContext context) {
+    // Check if the caption exceeds 150 characters
+    bool isLongCaption = widget.post.caption.length > 150;
+    String displayedCaption = _isCaptionExpanded
+        ? widget.post.caption // Full caption when expanded
+        : widget.post.caption.length > 150
+            ? "${widget.post.caption.substring(0, 150)}..." // Truncated caption with "..."
+            : widget.post.caption; // If caption is short, show full caption
+
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      elevation: 0,
+      margin: const EdgeInsets.all(0),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -81,40 +93,67 @@ class _PostWidgetState extends State<PostWidget> {
                 backgroundImage: profile?.avatarUrl != null
                     ? NetworkImage(profile!.avatarUrl!)
                     : null,
-                child:
-                    profile == null ? const CircularProgressIndicator() : null,
+                child: profile == null ? const CircularProgressIndicator() : null,
               ),
               title: Text(profile?.username ?? 'Loading...'),
-               
               subtitle: Text(preprocessDate(widget.post.createdAt)), // Assuming post has createdAt
+              onTap: (){
+                context.go('/profile/${widget.post.userId}');
+              },
             ),
             const SizedBox(height: 10),
-            Text(widget.post.caption), // Post content (e.g., caption)
+            // Caption with "See More" toggle
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  displayedCaption,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                if (isLongCaption) // Show "See More" or "See Less" if caption is too long
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isCaptionExpanded = !_isCaptionExpanded; // Toggle expanded/collapsed
+                      });
+                    },
+                    child: Text(
+                      _isCaptionExpanded ? 'See Less' : 'See More',
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             const SizedBox(height: 10),
+            // Media carousel or content
             MediaCarouselNetwork(postId: widget.post.id, withMediaContent: widget.post.withMediaContent),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _isLiked ? TextButton.icon(
-                  icon: const Icon(Icons.favorite),
-                  label:  Text(widget.post.likeCount.toString()),
-                  onPressed: () {
-                    postLikeService.likePost(widget.post.id, _currentUserId);
-                    setState(() {
-                      _isLiked = false;
-                    });
-                  },
-                ) :
-                TextButton.icon(
-                  icon: const Icon(Icons.favorite_border),
-                  label:  Text(widget.post.likeCount.toString()),
-                  onPressed: () {
-                    postLikeService.likePost(widget.post.id, _currentUserId);
-                    setState(() {
-                      _isLiked = true;
-                    });
-                  },
-                ),
+                _isLiked
+                    ? TextButton.icon(
+                        icon: const Icon(Icons.favorite),
+                        label: Text(widget.post.likeCount.toString()),
+                        onPressed: () {
+                          postLikeService.likePost(widget.post.id, _currentUserId);
+                          setState(() {
+                            _isLiked = false;
+                          });
+                        },
+                      )
+                    : TextButton.icon(
+                        icon: const Icon(Icons.favorite_border),
+                        label: Text(widget.post.likeCount.toString()),
+                        onPressed: () {
+                          postLikeService.likePost(widget.post.id, _currentUserId);
+                          setState(() {
+                            _isLiked = true;
+                          });
+                        },
+                      ),
                 TextButton.icon(
                   icon: const Icon(Icons.comment),
                   label: const Text('Comment'),
