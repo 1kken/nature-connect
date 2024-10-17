@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nature_connect/custom_widgets/comment_widget.dart';
+import 'package:nature_connect/model/comment.dart';
 import 'package:nature_connect/model/post.dart';
+import 'package:nature_connect/services/comment_service.dart';
 import 'package:nature_connect/services/post_service.dart';
 
 class CommentSection extends StatefulWidget {
@@ -12,6 +15,7 @@ class CommentSection extends StatefulWidget {
 
 class _CommentSectionState extends State<CommentSection> {
   final TextEditingController _commentController = TextEditingController();
+  bool _loading = false;
 
   Post? post;
 
@@ -27,6 +31,28 @@ class _CommentSectionState extends State<CommentSection> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to fetch post: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  //post the comment
+  Future<void> postComment(String postId, String content) async {
+    try {
+      setState(() {
+        _loading = true;
+      });
+      await CommentService().createComment(postId, content);
+      setState(() {
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to post comment: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -54,7 +80,7 @@ class _CommentSectionState extends State<CommentSection> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            GoRouter.of(context).go('/newsfeed');
+            GoRouter.of(context).go('/home');
           },
         ),
       ),
@@ -62,31 +88,33 @@ class _CommentSectionState extends State<CommentSection> {
         children: [
           // Expanded widget to make ListView take remaining space
           Expanded(
-            //add a listview and 3 dummy comments
-            child: ListView(
-              children: const [
-                ListTile(
-                  leading: CircleAvatar(
-                    child: Text('A'),
-                  ),
-                  title: Text('Alice'),
-                  subtitle: Text('This is a comment'),
-                ),
-                ListTile(
-                  leading: CircleAvatar(
-                    child: Text('B'),
-                  ),
-                  title: Text('Bob'),
-                  subtitle: Text('This is another comment'),
-                ),
-                ListTile(
-                  leading: CircleAvatar(
-                    child: Text('C'),
-                  ),
-                  title: Text('Charlie'),
-                  subtitle: Text('This is yet another comment'),
-                ),
-              ],
+            child: StreamBuilder(
+              stream: CommentService().streamCommentsByPostId(widget.postId),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text('An error occurred ${snapshot.error}'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final comments = snapshot.data as List<Comment>;
+
+                // If no comments, show a message
+                if (comments.isEmpty) {
+                  return const Center(child: Text('No comments yet.'));
+                }
+
+                // Display the list of comments
+                return ListView.builder(
+                  itemCount: comments.length,
+                  itemBuilder: (context, index) {
+                    final comment = comments[index];
+                    return CommentWidget(comment: comment);
+                  },
+                );
+              },
             ),
           ),
           // Text input for new comments
@@ -96,19 +124,41 @@ class _CommentSectionState extends State<CommentSection> {
               children: [
                 // Text field for entering comments
                 Expanded(
-                  child: TextField(
-                    controller: _commentController,
-                    decoration: InputDecoration(
-                      hintText: 'Write a comment...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      maxHeight: 75, // Limit the height for the TextField
+                    ),
+                    child: SingleChildScrollView(
+                      // Ensure TextFormField is scrollable after hitting the max height
+                      scrollDirection: Axis.vertical,
+                      reverse:
+                          true, // Keeps the cursor at the bottom as it grows
+                      child: TextFormField(
+                        controller: _commentController,
+                        maxLines:
+                            null, // Allows the field to have any number of lines
+                        maxLength: null,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          hintText: 'Write a comment...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 8),
                 // Submit button to post the comment
-                IconButton(icon: const Icon(Icons.send), onPressed: () {}),
+                _loading
+                    ? const CircularProgressIndicator()
+                    : IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: () {
+                          postComment(widget.postId, _commentController.text);
+                          _commentController.clear();
+                        }),
               ],
             ),
           ),
