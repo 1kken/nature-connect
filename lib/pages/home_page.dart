@@ -8,7 +8,6 @@ import 'package:nature_connect/pages/weather.dart';
 
 // Import your page widgets
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -39,7 +38,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('NatureConnect'), // AppBar title
+        title: const Text(
+          'NatureConnect',
+          style: TextStyle(
+              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
+        ), // AppBar title
         actions: [
           //search bar
           IconButton(
@@ -78,7 +81,8 @@ class _HomePageState extends State<HomePage> {
         ],
         currentIndex: _selectedIndex, // Current tab
         unselectedItemColor: Theme.of(context).colorScheme.secondary,
-        selectedItemColor: Theme.of(context).primaryColor, // Color of the selected tab
+        selectedItemColor:
+            Theme.of(context).primaryColor, // Color of the selected tab
         onTap: _onItemTapped, // Handle tab selection
       ),
     );

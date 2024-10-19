@@ -101,12 +101,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
                       post: Post.fromMap(post),
                     );
                   },
-                  separatorBuilder: (context, index) {
-                    return const Divider(
-                      height: 50,
-                      color: Colors.grey,
-                    ); // Space and a dividing line
-                  },
+                  separatorBuilder: (context, index) => const SizedBox(height: 25),
                 );
               },
             ),

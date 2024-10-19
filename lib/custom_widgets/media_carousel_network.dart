@@ -49,11 +49,11 @@ class _MediaCarouselNetworkState extends State<MediaCarouselNetwork> {
   Widget _buildMediaWidget(MediaContent mediaContent) {
     if (mediaContent.mimeType.startsWith('image/')) {
       return SizedBox(
-        height: 500,
         child: CachedNetworkImage(
           imageUrl: mediaContent.storageUrl, // URL of the media content
           imageBuilder: (context, imageProvider) => Container(
             decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.0),
               image: DecorationImage(
                 image: imageProvider,
                 fit: BoxFit.cover, // Fit the image as per your requirement

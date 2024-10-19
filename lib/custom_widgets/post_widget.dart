@@ -24,7 +24,8 @@ class _PostWidgetState extends State<PostWidget> {
   final postLikeService = PostLikeService();
 
   Future<void> isLikedSetter() async {
-    final isLiked = await PostLikeService().isPostLiked(widget.post.id, _currentUserId);
+    final isLiked =
+        await PostLikeService().isPostLiked(widget.post.id, _currentUserId);
     setState(() {
       _isLiked = isLiked;
     });
@@ -34,7 +35,8 @@ class _PostWidgetState extends State<PostWidget> {
   Future<void> fetchProfile(String userId) async {
     try {
       // Use service for fetching profile
-      final fetchedProfile = await ProfileServices().fetchProfileById(widget.post.userId);
+      final fetchedProfile =
+          await ProfileServices().fetchProfileById(widget.post.userId);
       setState(() {
         profile = fetchedProfile;
       });
@@ -51,8 +53,7 @@ class _PostWidgetState extends State<PostWidget> {
   }
 
   String preprocessDate(DateTime date) {
-    final String formattedDate =
-        '${date.day}-${date.month}-${date.year}';
+    final String formattedDate = '${date.day}-${date.month}-${date.year}';
     return formattedDate;
   }
 
@@ -62,14 +63,14 @@ class _PostWidgetState extends State<PostWidget> {
     isLikedSetter();
     fetchProfile(widget.post.userId);
   }
-  
+
   @override
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     // Check if the caption exceeds 150 characters
@@ -81,10 +82,17 @@ class _PostWidgetState extends State<PostWidget> {
             : widget.post.caption; // If caption is short, show full caption
 
     return Card(
-      elevation: 0,
+      elevation: 2,
       margin: const EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0), // Adjust the border radius as needed
+              side: const BorderSide(
+                color: Colors.transparent, // Set the border color here
+                width: 2.0, // Set the border width here
+              ),
+            ),
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -93,11 +101,18 @@ class _PostWidgetState extends State<PostWidget> {
                 backgroundImage: profile?.avatarUrl != null
                     ? NetworkImage(profile!.avatarUrl!)
                     : null,
-                child: profile == null ? const CircularProgressIndicator() : null,
+                child:
+                    profile == null ? const CircularProgressIndicator() : null,
               ),
               title: Text(profile?.username ?? 'Loading...'),
-              subtitle: Text(preprocessDate(widget.post.createdAt)), // Assuming post has createdAt
-              onTap: (){
+              subtitle: Text(
+                preprocessDate(widget.post.createdAt),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ), // Assuming post has createdAt
+              onTap: () {
                 context.go('/profile/${widget.post.userId}');
               },
             ),
@@ -114,7 +129,8 @@ class _PostWidgetState extends State<PostWidget> {
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isCaptionExpanded = !_isCaptionExpanded; // Toggle expanded/collapsed
+                        _isCaptionExpanded =
+                            !_isCaptionExpanded; // Toggle expanded/collapsed
                       });
                     },
                     child: Text(
@@ -129,7 +145,9 @@ class _PostWidgetState extends State<PostWidget> {
             ),
             const SizedBox(height: 10),
             // Media carousel or content
-            MediaCarouselNetwork(postId: widget.post.id, withMediaContent: widget.post.withMediaContent),
+            MediaCarouselNetwork(
+                postId: widget.post.id,
+                withMediaContent: widget.post.withMediaContent),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -138,7 +156,8 @@ class _PostWidgetState extends State<PostWidget> {
                         icon: const Icon(Icons.favorite),
                         label: Text(widget.post.likeCount.toString()),
                         onPressed: () {
-                          postLikeService.likePost(widget.post.id, _currentUserId);
+                          postLikeService.likePost(
+                              widget.post.id, _currentUserId);
                           setState(() {
                             _isLiked = false;
                           });
@@ -148,7 +167,8 @@ class _PostWidgetState extends State<PostWidget> {
                         icon: const Icon(Icons.favorite_border),
                         label: Text(widget.post.likeCount.toString()),
                         onPressed: () {
-                          postLikeService.likePost(widget.post.id, _currentUserId);
+                          postLikeService.likePost(
+                              widget.post.id, _currentUserId);
                           setState(() {
                             _isLiked = true;
                           });
