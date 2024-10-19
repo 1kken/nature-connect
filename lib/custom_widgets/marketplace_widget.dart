@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nature_connect/model/marketplace_item.dart';
 import 'package:nature_connect/model/marketplace_media.dart';
@@ -12,7 +13,7 @@ class MarketplaceWidget extends StatefulWidget {
 }
 
 class _MarketplaceWidgetState extends State<MarketplaceWidget> {
-  Future<Image> fetchImage() async {
+  Future<CachedNetworkImage> fetchImage() async {
     MarketplaceMedia? media = await MarketplaceMediaService()
         .getFirstMarketplaceMedia(widget.item.id);
 
@@ -20,16 +21,18 @@ class _MarketplaceWidgetState extends State<MarketplaceWidget> {
       throw 'No media found';
     }
     debugPrint('Media: ${media.storageUrl}');
-    return Image.network(loadingBuilder:
-        (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-      if (loadingProgress == null) {
-        return child;
-      } else {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-    }, fit: BoxFit.cover, width: 100, media.storageUrl);
+    return CachedNetworkImage(
+      imageUrl: media.storageUrl, // URL for the media
+      width: 100, // Set the width to 100 as in the original code
+      fit: BoxFit.cover, // Ensure the image fits properly
+      placeholder: (context, url) => const Center(
+        child:
+            CircularProgressIndicator(), // Show loading indicator while image loads
+      ),
+      errorWidget: (context, url, error) => const Center(
+        child: Icon(Icons.error), // Handle error with an icon
+      ),
+    );
   }
 
   @override
