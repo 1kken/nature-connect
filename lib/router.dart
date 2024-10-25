@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:nature_connect/custom_widgets/comment_section.dart';
+import 'package:nature_connect/custom_widgets/make_draft_widget.dart';
 import 'package:nature_connect/custom_widgets/make_item_widget.dart';
 import 'package:nature_connect/custom_widgets/make_post_widget.dart';
 import 'package:nature_connect/pages/auth_page.dart';
@@ -42,6 +43,9 @@ GoRouter goRouter() {
       },),
       GoRoute(path: '/makeitem',builder: (context, state){
         return const MakeItemWidget();
+      },),
+      GoRoute(path: '/makedraft',builder: (context, state){
+        return const MakeDraftWidget();
       },),
     ],
   );
