@@ -6,8 +6,6 @@ import 'package:nature_connect/pages/marketplace.dart';
 import 'package:nature_connect/pages/newsfeed.dart';
 import 'package:nature_connect/pages/weather.dart';
 
-// Import your page widgets
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -16,18 +14,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Index of the currently selected tab.
   int _selectedIndex = 0;
 
-  // List of widgets representing different pages for each tab.
-  static const List<Widget> _pages = <Widget>[
-    NewsfeedPage(),
-    MarketplacePage(),
-    LocationPage(),
-    WeatherPage(),
-  ];
-
-  // Called when a new tab is tapped.
+  // Called when a new tab is tapped
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -41,10 +30,12 @@ class _HomePageState extends State<HomePage> {
         title: const Text(
           'NatureConnect',
           style: TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-        ), // AppBar title
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
-          //search bar
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
@@ -54,12 +45,20 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
-              context.go('/profile'); // Adjust as needed
+              context.go('/profile'); // Navigate to profile page
             },
           ),
         ],
       ),
-      body: _pages[_selectedIndex], // Display the selected page
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: const <Widget>[
+          NewsfeedPage(),
+          MarketplacePage(),
+          LocationPage(),
+          WeatherPage(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -79,11 +78,10 @@ class _HomePageState extends State<HomePage> {
             label: 'Weather',
           ),
         ],
-        currentIndex: _selectedIndex, // Current tab
+        currentIndex: _selectedIndex,
         unselectedItemColor: Theme.of(context).colorScheme.secondary,
-        selectedItemColor:
-            Theme.of(context).primaryColor, // Color of the selected tab
-        onTap: _onItemTapped, // Handle tab selection
+        selectedItemColor: Theme.of(context).primaryColor,
+        onTap: _onItemTapped,
       ),
     );
   }

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:nature_connect/pages/drafts.dart';
 import 'package:nature_connect/pages/settings.dart';
 import 'package:nature_connect/pages/timeline.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,32 +14,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  bool _hasInternet = false; // Tracks the internet connection status
-  late StreamSubscription<InternetStatus> listener;
+
 
   @override
   void initState() {
     super.initState();
-    listener =
-        InternetConnection().onStatusChange.listen((InternetStatus status) {
-      switch (status) {
-        case InternetStatus.connected:
-        setState(() {
-            _hasInternet = true;
-        });
-          break;
-        case InternetStatus.disconnected:
-          setState(() {
-            _hasInternet = false;
-          });
-          break;
-      }
-    });
   }
 
   @override
   void dispose() {
-    listener.cancel();
     super.dispose();
   }
   // Index of the currently selected tab.
