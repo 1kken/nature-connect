@@ -18,6 +18,7 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
   final List<File> _mediaFiles = []; // Store selected images or videos
   final DraftProvider _draftProvider = DraftProvider();
 
+
   // Handle adding media files from the picker
   void addMediaFile(File file) {
     setState(() {
@@ -34,6 +35,8 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
   Future<void> _saveDraft() async {
     // Prepare list of media paths
     List<String> mediaPaths = _mediaFiles.map((file) => file.path).toList();
+
+    debugPrint('Saving draft with caption: ${mediaPaths[0]}');
 
     try {
       //data to Draft object
