@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:nature_connect/custom_widgets/media_carousel_path.dart';
 import 'package:nature_connect/model/draft.dart';
 import 'package:nature_connect/model/draft_media.dart';
 import 'package:nature_connect/providers/draft_media_provider.dart';
+import 'package:nature_connect/services/post_service.dart';
 
 class DraftWidget extends StatefulWidget {
   final Draft draft;
-  const DraftWidget({required this.draft, super.key});
+  final VoidCallback onDelete;
+  const DraftWidget({required this.draft, super.key, required this.onDelete});
 
   @override
   State<DraftWidget> createState() => _DraftWidgetState();
@@ -15,41 +20,90 @@ class DraftWidget extends StatefulWidget {
 class _DraftWidgetState extends State<DraftWidget> {
   bool _isCaptionExpanded = false; // State for "See More" functionality
   List<String> mediaPaths = [];
+  bool _hasConnection = false; // Tracks the internet connection status
+  StreamSubscription<InternetStatus>? _internetSubscription;
+  @override
+  void initState() {
+    super.initState();
 
-  // Format the draft creation date
-  String preprocessDate(DateTime date) {
-    final String formattedDate = '${date.day}-${date.month}-${date.year}';
-    return formattedDate;
+    // Load media paths
+    _loadMediaPaths();
+
+    // Listen for internet status changes and update accordingly
+    _internetSubscription =
+        InternetConnection().onStatusChange.listen((InternetStatus status) {
+      switch (status) {
+        case InternetStatus.connected:
+          if (mounted) {
+            setState(() {
+              _updateConnectionStatus(status);
+            });
+          }
+          break;
+        case InternetStatus.disconnected:
+          if (mounted) {
+            setState(() {
+              _hasConnection = false;
+            });
+          }
+        default:
+          if (mounted) {
+            setState(() {
+              _hasConnection = false;
+            });
+          }
+          break;
+      }
+    });
   }
 
   @override
-  void initState() {
-    _loadMediaPaths();
-    super.initState();
+  void dispose() {
+    _internetSubscription?.cancel();
+    super.dispose();
   }
+
+  Future<void> _updateConnectionStatus(InternetStatus status) async {
+    bool hasInternet = await checkInternet();
+    if (mounted) {
+      setState(() {
+        _hasConnection = status == InternetStatus.connected && hasInternet;
+      });
+    }
+  }
+
+  Future<bool> checkInternet() async {
+    return await InternetConnection().hasInternetAccess;
+  }
+
   Future<void> _loadMediaPaths() async {
-    List<DraftMedia> draftMedias = await DraftMediaProvider().getDraftMedia(widget.draft.draftId!);
+    List<DraftMedia> draftMedias =
+        await DraftMediaProvider().getDraftMedia(widget.draft.draftId!);
     setState(() {
       mediaPaths = draftMedias.map((e) => e.path).toList();
     });
   }
+
+  Future<void> _uploadDraft() async {
+    await PostService().createPostWithMedia(widget.draft.caption, mediaPaths);
+    widget.onDelete();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Check if the caption exceeds 150 characters
     bool isLongCaption = widget.draft.caption.length > 150;
     String displayedCaption = _isCaptionExpanded
-        ? widget.draft.caption // Full caption when expanded
+        ? widget.draft.caption
         : widget.draft.caption.length > 150
-            ? "${widget.draft.caption.substring(0, 150)}..." // Truncated caption with "..."
-            : widget.draft.caption; // Full caption if it's short enough
-
+            ? "${widget.draft.caption.substring(0, 150)}..." 
+            : widget.draft.caption;
     return Card(
       elevation: 2,
       margin: const EdgeInsets.all(0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
         side: const BorderSide(
-          color: Colors.transparent,
+          color: Colors.black54,
           width: 2.0,
         ),
       ),
@@ -58,6 +112,51 @@ class _DraftWidgetState extends State<DraftWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ListTile(
+              trailing: PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    widget.onDelete();
+                  } else if (value == 'upload') {
+                    _uploadDraft();
+                  }
+                },
+                itemBuilder: (BuildContext context) => [
+                  _hasConnection
+                      ? const PopupMenuItem<String>(
+                          value: 'upload',
+                          child: Row(
+                            children: [
+                              Icon(Icons.upload, color: Colors.blue),
+                              SizedBox(width: 8),
+                              Text('Upload'),
+                            ],
+                          ),
+                        )
+                      : const PopupMenuItem<String>(
+                          value: 'upload',
+                          enabled: false,
+                          child: Row(
+                            children: [
+                              Icon(Icons.upload, color: Colors.blue),
+                              SizedBox(width: 8),
+                              Text('Upload'),
+                            ],
+                          ),
+                        ),
+                  const PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Delete'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 10),
             // Caption with "See More" toggle
             Column(

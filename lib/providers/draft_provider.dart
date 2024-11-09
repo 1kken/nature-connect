@@ -25,5 +25,6 @@ class DraftProvider {
   // Delete a draft by ID
   Future<void> deleteDraft(int draftId) async {
     await SqliteDb.db.deleteDraft(draftId);
+    await SqliteDb.db.deleteDraftMedia(draftId);
   }
 }

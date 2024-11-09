@@ -39,8 +39,6 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
     // Prepare list of media paths
     List<String> mediaPaths = _mediaFiles.map((file) => file.path).toList();
 
-    debugPrint('Saving draft with caption: ${mediaPaths[0]}');
-
     try {
       //data to Draft object
       final draft = Draft( 
@@ -64,7 +62,7 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
       }
       
       if (mounted) {
-        context.go('/profile');
+        context.go('/drafts/true');
       }
     } catch (e) {
       if (!mounted) return; // Prevent error if widget is disposed

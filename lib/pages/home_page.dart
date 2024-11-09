@@ -44,14 +44,19 @@ class _HomePageState extends State<HomePage> {
             });
           }
         default:
-        if (mounted) {
+          if (mounted) {
             setState(() {
               _hasConnection = false;
             });
-        }
+          }
           break;
       }
     });
+    if (mounted){
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _updateConnectionStatus(InternetStatus status) async {
@@ -70,7 +75,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    debugPrint(_hasConnection.toString());
     _internetSubscription?.cancel();
     super.dispose();
   }

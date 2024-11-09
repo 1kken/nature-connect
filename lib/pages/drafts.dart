@@ -45,7 +45,19 @@ class _DraftsPageState extends State<DraftsPage> {
           : ListView.builder(
               itemCount: drafts.length,
               itemBuilder: (context, index) {
-                  return DraftWidget(draft: drafts[index]);
+                return Column(
+                  children: [
+                    DraftWidget(
+                        draft: drafts[index],
+                        onDelete: () async {
+                          await _draftProvider
+                              .deleteDraft(drafts[index].draftId!);
+                          await _loadDrafts();
+                        }),
+                    if (index != drafts.length - 1)
+                      const Divider(), // Divider between items
+                  ],
+                );
               },
             ),
       floatingActionButton: FloatingActionButton(
