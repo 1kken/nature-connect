@@ -8,34 +8,48 @@ class NoInternetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.wifi_off,
-            color: Colors.grey,
-            size: 80.0,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'NatureConnect',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
-          const SizedBox(height: 20),
-          Text(
-            'No Internet Connection',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
+        ),
+        backgroundColor: Colors.white,
+        elevation: 1,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.wifi_off,
+              color: Colors.grey,
+              size: 80.0,
             ),
-          ),
-          const SizedBox(height: 20),
-          if (showGoToDraftsButton) 
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to drafts screen using context.go
-                context.go('/makedraft');
-              },
-              child: const Text('Go to Drafts'),
+            const SizedBox(height: 20),
+            Text(
+              'No Internet Connection',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
+              ),
             ),
-        ],
+            const SizedBox(height: 20),
+            if (showGoToDraftsButton)
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to drafts screen using context.go
+                  context.go('/makedraft');
+                },
+                child: const Text('Go to Drafts'),
+              ),
+          ],
+        ),
       ),
     );
   }

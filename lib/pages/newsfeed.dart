@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:nature_connect/custom_widgets/no_internet_widget.dart';
 import 'package:nature_connect/custom_widgets/post_widget.dart';
-import 'package:nature_connect/internet_notifer.dart';
 import 'package:nature_connect/model/post.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -22,50 +19,16 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   final _stream = supabase.from('post').stream(primaryKey: ['id']);
   String? _username; // To store the authenticated user's username
   String? _avatarUrl; // To store the authenticated user's avatar URL
-  bool _hasConnection = false; // Tracks the internet connection status
-  bool _isLoading = true;
-  StreamSubscription<InternetStatus>? _internetSubscription;
-
   @override
+  
+@override
   void initState() {
-    super.initState();
-    debugPrint("Initializing NewsfeedPage");
-
-    // Initialize the InternetStatusNotifier and subscribe to status changes
-    InternetStatusNotifier().initialize();
-
-    // Listen for internet status changes and update accordingly
-    _internetSubscription =
-        InternetStatusNotifier().onStatusChange.listen((status) {
-      if (mounted) {
-        _updateConnectionStatus(status);
-      }
-    });
-  }
-
-  Future<void> _updateConnectionStatus(InternetStatus status) async {
-    bool hasInternet = await checkInternet();
     if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _hasConnection = status == InternetStatus.connected && hasInternet;
-        if (_hasConnection) {
-          fetchUserProfile();
-        }
-      });
+      fetchUserProfile();
     }
-  }
 
-  Future<bool> checkInternet() async {
-    return await InternetConnection().hasInternetAccess;
+    super.initState();
   }
-
-  @override
-  void dispose() {
-    _internetSubscription?.cancel();
-    super.dispose();
-  }
-
   // Fetch authenticated user's profile data
   Future<void> fetchUserProfile() async {
     final currentUser = supabase.auth.currentUser;
@@ -87,12 +50,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator()) // Show loading indicator
-          : !_hasConnection
-              ? const NoInternetWidget(showGoToDraftsButton: true)
-              : Column(
+      body:Column(
                   children: [
                     // "What's on your mind" section
                     GestureDetector(
