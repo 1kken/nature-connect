@@ -26,16 +26,28 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    debugPrint("Initializing NewsfeedPage");
-
     // Initialize the InternetStatusNotifier and subscribe to status changes
     InternetStatusNotifier().initialize();
 
     // Listen for internet status changes and update accordingly
     _internetSubscription =
-        InternetStatusNotifier().onStatusChange.listen((status) {
-      if (mounted) {
-        _updateConnectionStatus(status);
+        InternetConnection().onStatusChange.listen((InternetStatus status) {
+      switch (status) {
+        case InternetStatus.connected:
+          if (mounted) {
+            setState(() {
+              _updateConnectionStatus(status);
+            });
+          }
+          break;
+        case InternetStatus.disconnected:
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              _hasConnection = false;
+            });
+          }
+          break;
       }
     });
   }
@@ -56,6 +68,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    debugPrint(_hasConnection.toString());
     _internetSubscription?.cancel();
     super.dispose();
   }
@@ -76,8 +89,7 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         : !_hasConnection
-            ? const NoInternetWidget(
-              )
+            ? const NoInternetWidget()
             : Scaffold(
                 appBar: AppBar(
                   title: const Text(
