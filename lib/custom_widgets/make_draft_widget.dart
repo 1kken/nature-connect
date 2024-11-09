@@ -74,7 +74,7 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            context.go('/profile');
+            context.go('/drafts');
           },
         ),
         actions: [

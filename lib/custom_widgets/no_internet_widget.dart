@@ -44,7 +44,7 @@ class NoInternetWidget extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Navigate to drafts screen using context.go
-                  context.go('/makedraft');
+                  context.go('/drafts/true');
                 },
                 child: const Text('Go to Drafts'),
               ),

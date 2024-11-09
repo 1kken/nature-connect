@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:nature_connect/custom_search_delegate.dart';
 import 'package:nature_connect/custom_widgets/no_internet_widget.dart';
-import 'package:nature_connect/internet_notifer.dart';
 import 'package:nature_connect/pages/location.dart';
 import 'package:nature_connect/pages/marketplace.dart';
 import 'package:nature_connect/pages/newsfeed.dart';
@@ -26,8 +25,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Initialize the InternetStatusNotifier and subscribe to status changes
-    InternetStatusNotifier().initialize();
 
     // Listen for internet status changes and update accordingly
     _internetSubscription =
@@ -43,13 +40,17 @@ class _HomePageState extends State<HomePage> {
         case InternetStatus.disconnected:
           if (mounted) {
             setState(() {
-              _isLoading = false;
               _hasConnection = false;
             });
           }
           break;
       }
     });
+    if (mounted){
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _updateConnectionStatus(InternetStatus status) async {
