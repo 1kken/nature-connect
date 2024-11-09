@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:mime/mime.dart';
 import 'package:nature_connect/custom_widgets/media_picker.dart';
 import 'package:nature_connect/custom_widgets/media_carousel_path.dart';
 import 'package:nature_connect/model/draft.dart';
+import 'package:nature_connect/model/draft_media.dart';
+import 'package:nature_connect/providers/draft_media_provider.dart';
 import 'package:nature_connect/providers/draft_provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -46,7 +49,19 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
       );
 
       //save draft
-      await _draftProvider.addDraft(draft);
+      int id = await _draftProvider.addDraft(draft);
+
+      //save media drafts using provider
+      for (String path in mediaPaths) {
+        //make a dradft media object
+        final draftMedia = DraftMedia(
+          draftId: id,
+          path: path,
+          mimeType: lookupMimeType(path)!
+        );
+        //save using provider
+        await DraftMediaProvider().addDraftMedia(draftMedia);
+      }
       
       if (mounted) {
         context.go('/profile');
@@ -74,7 +89,7 @@ class _MakeDraftWidgetState extends State<MakeDraftWidget> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            context.go('/drafts');
+            context.go('/drafts/true');
           },
         ),
         actions: [

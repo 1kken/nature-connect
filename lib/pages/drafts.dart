@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nature_connect/custom_widgets/draft_widget.dart';
 import 'package:nature_connect/providers/draft_provider.dart';
 import 'package:nature_connect/model/draft.dart';
 
@@ -44,9 +45,7 @@ class _DraftsPageState extends State<DraftsPage> {
           : ListView.builder(
               itemCount: drafts.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(drafts[index].caption),
-                );
+                  return DraftWidget(draft: drafts[index]);
               },
             ),
       floatingActionButton: FloatingActionButton(

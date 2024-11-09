@@ -17,8 +17,9 @@ class DraftProvider {
   }
 
   // Add a new draft
-  Future<void> addDraft(Draft draft) async {
-    await SqliteDb.db.createDraft(draft);
+  Future<int> addDraft(Draft draft) async {
+    int id = await SqliteDb.db.createDraft(draft);
+    return id;
   }
 
   // Delete a draft by ID

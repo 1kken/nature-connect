@@ -43,14 +43,15 @@ class _HomePageState extends State<HomePage> {
               _hasConnection = false;
             });
           }
+        default:
+        if (mounted) {
+            setState(() {
+              _hasConnection = false;
+            });
+        }
           break;
       }
     });
-    if (mounted){
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   Future<void> _updateConnectionStatus(InternetStatus status) async {

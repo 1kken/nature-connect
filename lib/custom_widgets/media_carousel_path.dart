@@ -35,10 +35,10 @@ class _MediaCarouselState extends State<MediaCarousel> {
     if (mimeType != null) {
       //Check if the file is an image or not
       if (mimeType.startsWith('image/')) {
-
         //make image widget
-        return Container(
-          color: Colors.black,
+        return ClipRRect(
+          borderRadius:
+              BorderRadius.circular(20), // Set the rounded corners radius
           child: Image.file(
             File(path),
             fit: BoxFit.contain,
@@ -92,11 +92,13 @@ class _MediaCarouselState extends State<MediaCarousel> {
     return CarouselSlider(
       items: mediaWidgets,
       options: CarouselOptions(
-        height: 400.0,
+        height: 300.0,
         enlargeCenterPage: true,
+        enlargeStrategy: CenterPageEnlargeStrategy.zoom,
         enableInfiniteScroll: false,
         autoPlay: false,
         aspectRatio: 16 / 9,
+        viewportFraction: 1.0,
       ),
     );
   }
