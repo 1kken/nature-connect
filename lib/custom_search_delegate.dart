@@ -103,7 +103,7 @@ class CustomSearchDelegate extends SearchDelegate {
                         itemCount: posts.length,
                         itemBuilder: (context, index) {
                           final post = posts[index];
-                          return PostWidget(post: post);
+                          return PostWidget(post: post);  
                         },
                       );
                     },

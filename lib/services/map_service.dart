@@ -59,7 +59,7 @@ class _MapServiceState extends State<MapService> {
   }
 
   Future<void> _loadLandmarks() async {
-    List<Marker> markers = await _natureLandmarksService.fetchLandmarks();
+    List<Marker> markers = await _natureLandmarksService.fetchLandmarks(context);
     setState(() {
       _landmarkMarkers = markers;
     });

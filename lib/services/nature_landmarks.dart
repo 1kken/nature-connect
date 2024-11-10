@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:nature_connect/pages/rate_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NatureLandmarksService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  Future<List<Marker>> fetchLandmarks() async {
+  Future<List<Marker>> fetchLandmarks(BuildContext context) async {
     final response = await _supabase.from('nature_landmarks').select('*');
 
     if (response.isEmpty) {
-      print('Error fetching landmarks: ${response}');
+      print('Error fetching landmarks: $response');
       return [];
     }
 
@@ -48,8 +49,16 @@ class NatureLandmarksService {
           point: position,
           child: GestureDetector(
             onTap: () {
-              print('Landmark ID: $id');
-              // Additional action on tap, like showing a dialog with details
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  return FractionallySizedBox(
+                    heightFactor: 0.5,
+                    child: RatePage(landMarkId: id),
+                  );
+                },
+              );
             },
             child: Image.asset(markerIconPath),
           ),

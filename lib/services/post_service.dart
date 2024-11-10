@@ -129,7 +129,10 @@ class PostService {
     if (userId == null) {
       return;
     }
-
-    await _client.from('post').delete().eq('id', postId).eq('user_id', userId);
+    try{
+      await _client.from('post').delete().eq('id', postId);
+    }catch(error){
+      throw Exception('Failed to delete post: $error');
+    }
   }
 }

@@ -19,9 +19,8 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   final _stream = supabase.from('post').stream(primaryKey: ['id']);
   String? _username; // To store the authenticated user's username
   String? _avatarUrl; // To store the authenticated user's avatar URL
+
   @override
-  
-@override
   void initState() {
     if (mounted) {
       fetchUserProfile();
@@ -29,6 +28,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
 
     super.initState();
   }
+
   // Fetch authenticated user's profile data
   Future<void> fetchUserProfile() async {
     final currentUser = supabase.auth.currentUser;
@@ -50,75 +50,72 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Column(
-                  children: [
-                    // "What's on your mind" section
-                    GestureDetector(
-                      onTap: () {
-                        context.go('/makepost');
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          children: [
-                            _avatarUrl != null
-                                ? CircleAvatar(
-                                    radius: 24,
-                                    backgroundImage: NetworkImage(_avatarUrl!),
-                                  )
-                                : const CircleAvatar(
-                                    radius: 24,
-                                    child: Icon(Icons.person),
-                                  ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                _username != null
-                                    ? "What's on your mind, $_username?"
-                                    : "What's on your mind?",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
+      body: Column(
+        children: [
+          // "What's on your mind" section
+          GestureDetector(
+            onTap: () {
+              context.go('/makepost');
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  _avatarUrl != null
+                      ? CircleAvatar(
+                          radius: 24,
+                          backgroundImage: NetworkImage(_avatarUrl!),
+                        )
+                      : const CircleAvatar(
+                          radius: 24,
+                          child: Icon(Icons.person),
                         ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _username != null
+                          ? "What's on your mind, $_username?"
+                          : "What's on your mind?",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
                       ),
                     ),
-                    const Divider(height: 1, color: Colors.grey),
-                    // List of posts from the stream
-                    Expanded(
-                      child: StreamBuilder(
-                        stream: _stream,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return const Center(
-                                child: Text(
-                                    'An error occurred while loading posts'));
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          final posts = snapshot.data as List;
-                          return ListView.separated(
-                            itemCount: posts.length,
-                            itemBuilder: (context, index) {
-                              final post = posts[index];
-                              return PostWidget(
-                                post: Post.fromMap(post),
-                              );
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 25),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(height: 1, color: Colors.grey),
+          // List of posts from the stream
+          Expanded(
+            child: StreamBuilder(
+              stream: _stream,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return const Center(
+                      child: Text('An error occurred while loading posts'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final posts = snapshot.data as List;
+                return ListView.separated(
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return PostWidget(
+                      post: Post.fromMap(post),
+                    );
+                  },
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 25),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

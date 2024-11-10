@@ -4,6 +4,7 @@ import 'package:nature_connect/custom_widgets/media_carousel_network.dart';
 import 'package:nature_connect/model/post.dart';
 import 'package:nature_connect/model/profile.dart';
 import 'package:nature_connect/services/post_like_service.dart';
+import 'package:nature_connect/services/post_service.dart';
 import 'package:nature_connect/services/profile_services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,8 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
+  final userId = Supabase.instance.client.auth.currentUser?.id;
+  bool isOwner = false;
   bool _isLiked = false;
   bool _isCaptionExpanded = false; // State for "See More"
   final _currentUserId = Supabase.instance.client.auth.currentUser?.id;
@@ -57,9 +60,34 @@ class _PostWidgetState extends State<PostWidget> {
     return formattedDate;
   }
 
+  Future<void> deletePost() async {
+    try {
+      await PostService().deletePost(widget.post.id);
+      if(!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Post deleted successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if(!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete post: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    setState((){
+      isOwner = widget.post.userId == userId;
+    });
+
     isLikedSetter();
     fetchProfile(widget.post.userId);
   }
@@ -85,12 +113,13 @@ class _PostWidgetState extends State<PostWidget> {
       elevation: 2,
       margin: const EdgeInsets.all(0),
       shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0), // Adjust the border radius as needed
-              side: const BorderSide(
-                color: Colors.transparent, // Set the border color here
-                width: 2.0, // Set the border width here
-              ),
-            ),
+        borderRadius:
+            BorderRadius.circular(15.0), // Adjust the border radius as needed
+        side: const BorderSide(
+          color: Colors.transparent, // Set the border color here
+          width: 2.0, // Set the border width here
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -115,6 +144,29 @@ class _PostWidgetState extends State<PostWidget> {
               onTap: () {
                 context.go('/profile/${widget.post.userId}');
               },
+              trailing: isOwner ? PopupMenuButton<String>(
+                onSelected: (value) async {
+                  if (value == 'delete') {
+                    print('Delete post');
+                    deletePost();
+                  }
+                },
+                itemBuilder: (BuildContext context) {
+                  return [
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete,
+                              color: Colors.red), // Red delete icon
+                          SizedBox(width: 8),
+                          Text('Delete'),
+                        ],
+                      ),
+                    ),
+                  ];
+                },
+              ):null,
             ),
             const SizedBox(height: 10),
             // Caption with "See More" toggle
