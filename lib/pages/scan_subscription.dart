@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:nature_connect/pages/checkout.dart';
 
 class ScanSubscription extends StatefulWidget {
+  const ScanSubscription({super.key});
+
   @override
   _ScanSubscriptionState createState() => _ScanSubscriptionState();
 }
@@ -20,15 +21,6 @@ class _ScanSubscriptionState extends State<ScanSubscription> {
     final dateFormat = DateFormat('yyyy-MM-dd');
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-              color: const Color.fromARGB(255, 24, 17, 17)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: Container(
         color: Colors.white, // Set the body background color to white
         child: Stack(
@@ -129,8 +121,7 @@ class _ScanSubscriptionState extends State<ScanSubscription> {
                               ),
                               onPressed: () {
                                 // Debug print for cancel button
-                                print("Cancel pressed");
-                                Navigator.pop(context);
+                                context.go('/home');
                               },
                               child: Text("Cancel"),
                             ),

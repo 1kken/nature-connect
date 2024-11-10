@@ -148,7 +148,7 @@ class _MapServiceState extends State<MapService> {
   }
 
   void scanSubscription(BuildContext context) {
-    context.go('/scan');
+    context.go('/home/scan');
   }
 
   @override
@@ -265,6 +265,7 @@ class _MapServiceState extends State<MapService> {
             bottom: 20,
             right: 20,
             child: FloatingActionButton(
+              heroTag: null,
               onPressed: _addMarkerAtCenter,
               backgroundColor: Colors.green,
               child: Icon(_markerManager.markerAdded

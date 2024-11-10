@@ -9,6 +9,7 @@ import 'package:nature_connect/pages/location.dart';
 import 'package:nature_connect/pages/marketplace.dart';
 import 'package:nature_connect/pages/newsfeed.dart';
 import 'package:nature_connect/pages/weather.dart';
+import 'package:nature_connect/pages/scan_subscription.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

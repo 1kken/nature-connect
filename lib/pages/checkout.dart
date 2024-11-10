@@ -4,6 +4,7 @@ import 'package:nature_connect/custom_search_delegate.dart';
 import 'package:nature_connect/custom_widgets/payment_popup.dart'; // Import the PaymentPopup widget
 
 class CheckoutPage extends StatefulWidget {
+
   final Map<String, dynamic>
       checkoutData; // Map containing either subscription or product details
 
