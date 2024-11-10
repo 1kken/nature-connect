@@ -11,6 +11,9 @@ import 'package:nature_connect/pages/newsfeed.dart';
 import 'package:nature_connect/pages/profile.dart';
 import 'package:nature_connect/pages/profile_v.dart';
 import 'package:nature_connect/pages/weather.dart';
+import 'package:nature_connect/pages/scan_subscription.dart';
+import 'package:nature_connect/pages/cam_scanner.dart';
+import 'package:nature_connect/pages/checkout.dart';
 
 
 
@@ -56,6 +59,21 @@ GoRouter goRouter() {
         }
         return const DraftsPage();
       },),
+      GoRoute(path: '/scan', builder: (context, state) => ScanSubscription()),
+      GoRoute(
+        path: '/checkout', // Path to the checkout page
+        builder: (context, state) {
+          // Extract checkoutData from the extra argument
+          final Map<String, dynamic> checkoutData =
+              state.extra as Map<String, dynamic>;
+
+          // Return the CheckoutPage with the extracted data
+          return CheckoutPage(
+            checkoutData: checkoutData,
+          );
+        },
+      ),
+      GoRoute(path: '/cam_scanner', builder: (context, state) => CamScanner()),
     ],
   );
 }

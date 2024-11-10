@@ -44,11 +44,19 @@ dependencies:
   path: ^1.9.0
   cached_network_image: ^3.4.1
   internet_connection_checker_plus: ^2.5.2
+  connectivity_plus: ^6.0.5
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geolocator: ^10.1.1 
+  geocode: ^1.0.3
+  camera: ^0.10.0+1
+  fluttertoast: ^8.1.1
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
@@ -74,7 +82,164 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/images/camp.png
+    - assets/images/restaurant.png
+    - assets/images/attraction.png
+    - assets/images/scan.png
+    - assets/images/logo.png
     - assets/images/logo.jpg
+    - assets/images/weather/10000.png
+    - assets/images/weather/10001.png
+    - assets/images/weather/10010.png
+    - assets/images/weather/11000.png
+    - assets/images/weather/11001.png
+    - assets/images/weather/11010.png
+    - assets/images/weather/11011.png
+    - assets/images/weather/11020.png
+    - assets/images/weather/11021.png
+    - assets/images/weather/11030.png
+    - assets/images/weather/11031.png
+    - assets/images/weather/20000.png
+    - assets/images/weather/21000.png
+    - assets/images/weather/21010.png
+    - assets/images/weather/21011.png
+    - assets/images/weather/21020.png
+    - assets/images/weather/21021.png
+    - assets/images/weather/21030.png
+    - assets/images/weather/21031.png
+    - assets/images/weather/21060.png
+    - assets/images/weather/21061.png
+    - assets/images/weather/21070.png
+    - assets/images/weather/21071.png
+    - assets/images/weather/21080.png
+    - assets/images/weather/21081.png
+    - assets/images/weather/40000.png
+    - assets/images/weather/40010.png
+    - assets/images/weather/42000.png
+    - assets/images/weather/42010.png
+    - assets/images/weather/42020.png
+    - assets/images/weather/42021.png
+    - assets/images/weather/42030.png
+    - assets/images/weather/42031.png
+    - assets/images/weather/42040.png
+    - assets/images/weather/42041.png
+    - assets/images/weather/42050.png
+    - assets/images/weather/42051.png
+    - assets/images/weather/42080.png
+    - assets/images/weather/42081.png
+    - assets/images/weather/42090.png
+    - assets/images/weather/42091.png
+    - assets/images/weather/42100.png
+    - assets/images/weather/42101.png
+    - assets/images/weather/42110.png
+    - assets/images/weather/42111.png
+    - assets/images/weather/42120.png
+    - assets/images/weather/42121.png
+    - assets/images/weather/42130.png
+    - assets/images/weather/42131.png
+    - assets/images/weather/42140.png
+    - assets/images/weather/42141.png
+    - assets/images/weather/42150.png
+    - assets/images/weather/42151.png
+    - assets/images/weather/50000.png
+    - assets/images/weather/50010.png
+    - assets/images/weather/51000.png
+    - assets/images/weather/51010.png
+    - assets/images/weather/51020.png
+    - assets/images/weather/51021.png
+    - assets/images/weather/51030.png
+    - assets/images/weather/51031.png
+    - assets/images/weather/51040.png
+    - assets/images/weather/51041.png
+    - assets/images/weather/51050.png
+    - assets/images/weather/51051.png
+    - assets/images/weather/51060.png
+    - assets/images/weather/51061.png
+    - assets/images/weather/51070.png
+    - assets/images/weather/51071.png
+    - assets/images/weather/51080.png
+    - assets/images/weather/51100.png
+    - assets/images/weather/51120.png
+    - assets/images/weather/51140.png
+    - assets/images/weather/51150.png
+    - assets/images/weather/51151.png
+    - assets/images/weather/51160.png
+    - assets/images/weather/51161.png
+    - assets/images/weather/51170.png
+    - assets/images/weather/51171.png
+    - assets/images/weather/51190.png
+    - assets/images/weather/51191.png
+    - assets/images/weather/51200.png
+    - assets/images/weather/51201.png
+    - assets/images/weather/51210.png
+    - assets/images/weather/51211.png
+    - assets/images/weather/51220.png
+    - assets/images/weather/60000.png
+    - assets/images/weather/60010.png
+    - assets/images/weather/60020.png
+    - assets/images/weather/60021.png
+    - assets/images/weather/60030.png
+    - assets/images/weather/60031.png
+    - assets/images/weather/60040.png
+    - assets/images/weather/60041.png
+    - assets/images/weather/62000.png
+    - assets/images/weather/62010.png
+    - assets/images/weather/62020.png
+    - assets/images/weather/62021.png
+    - assets/images/weather/62030.png
+    - assets/images/weather/62031.png
+    - assets/images/weather/62040.png
+    - assets/images/weather/62050.png
+    - assets/images/weather/62051.png
+    - assets/images/weather/62060.png
+    - assets/images/weather/62070.png
+    - assets/images/weather/62071.png
+    - assets/images/weather/62080.png
+    - assets/images/weather/62081.png
+    - assets/images/weather/62090.png
+    - assets/images/weather/62091.png
+    - assets/images/weather/62120.png
+    - assets/images/weather/62130.png
+    - assets/images/weather/62131.png
+    - assets/images/weather/62140.png
+    - assets/images/weather/62141.png
+    - assets/images/weather/62150.png
+    - assets/images/weather/62151.png
+    - assets/images/weather/62200.png
+    - assets/images/weather/62220.png
+    - assets/images/weather/70000.png
+    - assets/images/weather/71010.png
+    - assets/images/weather/71020.png
+    - assets/images/weather/71030.png
+    - assets/images/weather/71050.png
+    - assets/images/weather/71060.png
+    - assets/images/weather/71070.png
+    - assets/images/weather/71071.png
+    - assets/images/weather/71080.png
+    - assets/images/weather/71081.png
+    - assets/images/weather/71090.png
+    - assets/images/weather/71091.png
+    - assets/images/weather/71100.png
+    - assets/images/weather/71101.png
+    - assets/images/weather/71110.png
+    - assets/images/weather/71111.png
+    - assets/images/weather/71120.png
+    - assets/images/weather/71121.png
+    - assets/images/weather/71130.png
+    - assets/images/weather/71131.png
+    - assets/images/weather/71140.png
+    - assets/images/weather/71141.png
+    - assets/images/weather/71150.png
+    - assets/images/weather/71160.png
+    - assets/images/weather/71161.png
+    - assets/images/weather/71170.png
+    - assets/images/weather/80000.png
+    - assets/images/weather/80010.png
+    - assets/images/weather/80011.png
+    - assets/images/weather/80020.png
+    - assets/images/weather/80021.png
+    - assets/images/weather/80030.png
+    - assets/images/weather/80031.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nature_connect/services/map_service.dart';
+
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -8,14 +10,12 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-
-
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body:Center(
-                  child: Text('Put here dets louie'),
-                ),
+    return Scaffold(
+      body: Center(
+        child: MapService(),
+      ),
     );
   }
 }
