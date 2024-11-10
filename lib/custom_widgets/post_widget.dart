@@ -63,6 +63,7 @@ class _PostWidgetState extends State<PostWidget> {
   Future<void> deletePost() async {
     try {
       await PostService().deletePost(widget.post.id);
+      await fetchProfile(widget.post.userId);
       if(!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

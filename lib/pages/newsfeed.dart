@@ -16,7 +16,7 @@ class NewsfeedPage extends StatefulWidget {
 }
 
 class _NewsfeedPageState extends State<NewsfeedPage> {
-  final _stream = supabase.from('post').stream(primaryKey: ['id']);
+  final _stream = supabase.from('post').stream(primaryKey: ['id']).order('created_at', ascending: false);
   String? _username; // To store the authenticated user's username
   String? _avatarUrl; // To store the authenticated user's avatar URL
 
@@ -105,6 +105,7 @@ class _NewsfeedPageState extends State<NewsfeedPage> {
                   itemBuilder: (context, index) {
                     final post = posts[index];
                     return PostWidget(
+                      key: ValueKey(post['id']),
                       post: Post.fromMap(post),
                     );
                   },

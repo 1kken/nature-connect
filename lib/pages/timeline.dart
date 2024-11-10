@@ -60,6 +60,7 @@ class _TimelinePageState extends State<TimelinePage> {
                 itemBuilder: (context, index) {
                   final post = posts[index];
                   return PostWidget(
+                    key: ValueKey(post['id']),
                     post: Post.fromMap(post),
                   );
                 },
